@@ -1,4 +1,4 @@
-import { FORMULAS, FORUMLAKEYS } from "../constants/stats"
+import { FORMULAS, FORMULAKEYS } from "../constants/stats"
 import { characterStats, characterStatsKeys, countersKeys, trackedStat } from "../types/types"
 
 const getRandomNumber = (max: number) => {
@@ -86,7 +86,7 @@ export const getSkillGrowthCost = (skill: number, increment: number) => {
 }
 
 const applyForumla = (stats: characterStats, type: characterStatsKeys) => {
-    (Object.keys(stats[type]) as Array<FORUMLAKEYS>).forEach((key: FORUMLAKEYS) => {
+    (Object.keys(stats[type]) as Array<FORMULAKEYS>).forEach((key: FORMULAKEYS) => {
         if (key in FORMULAS) {
             stats[type][key].base = FORMULAS[key](stats.characteristics)
         }
@@ -104,6 +104,6 @@ export const applyForumlas = (stats: characterStats) => {
     applyCurrent(stats, 'characteristics')
     applyForumla(stats, 'skills')
     applyForumla(stats, 'attributes');
-    (Object.keys(stats.counters) as Array<countersKeys>).filter((key: countersKeys) => key in FORMULAS).forEach((key: countersKeys & FORUMLAKEYS ) => stats.counters[key] = FORMULAS[key](stats.characteristics))
+    (Object.keys(stats.counters) as Array<countersKeys>).filter((key: countersKeys) => key in FORMULAS).forEach((key: countersKeys & FORMULAKEYS ) => stats.counters[key] = FORMULAS[key](stats.characteristics))
     return stats
 }

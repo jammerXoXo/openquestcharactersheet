@@ -32,6 +32,27 @@ export type story = {
     completed: boolean
 }
 
+export type baseSpell = {
+    name: string
+    magnitude: number
+    variable: boolean
+    tags: string
+    type: magicsTypes
+}
+
+export type spellDescription = baseSpell & {
+    description: string
+}
+
+export type learnedSpell = baseSpell & {
+    learnedMagnitude: number
+    remainingMagnitude: number
+}
+
+export type item = {
+    name: string
+}
+
 export type characteristicsKeys = 'strength' | 'constitution' | 'dexterity' | 'size' | 'intelligence' | 'power' | 'charisma'
 export type characteristics =  { [key in characteristicsKeys]: trackedStat }
 
@@ -56,8 +77,8 @@ export type counters = { [key in countersKeys]: number }
 export type metasKeys = 'id' | 'edited'
 export type meta = { [key in metasKeys]: string }
 
-export type magicsKeys = 'personal' | 'divine' | 'sorcery'
-export type magic = { [key in magicsKeys]: any }
+export type magicsTypes = 'personal' | 'divine' | 'sorcery'
+export type magic = learnedSpell[]
 
 export type trackedInfoKeys = 'image' | 'name' | 'gender' | 'age' | 'culture' | 'concept' | 'rank' | 'org'
 export type trackedInfo = { [key in trackedInfoKeys]: string }
@@ -73,7 +94,7 @@ export type characterStats = {
     counters: counters
     meta: meta
     magic: magic
-    inventory: any
+    inventory: item[]
 }
 
 export type basicDescription = {

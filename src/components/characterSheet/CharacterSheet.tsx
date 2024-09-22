@@ -42,14 +42,14 @@ const CharacterSheet = () => {
             <StoryModal/>
             <LoadModal />
             <Container >
-                <Menu attached='top'>
-                    <MenuItem className='menubutton' name='dice tray' disabled={true}/>
+                <Menu attached='top' >
+                    <MenuItem position="right" className='menubutton' name='dice tray' disabled={true}/>
                     <MenuItem className='menubutton' name='edit' onClick={() => setEditingMode(!editingMode)} active={editingMode} />
                     <MenuItem className='menubutton' name='new' onClick={() => dispatch(newCharacter())} />
                     <MenuItem className='menubutton' name='load' onClick={() => setLoadModalState({open: true})} />
                     <MenuItem className='menubutton' name='download' onClick={() => saveFile(stats)} />
                 </Menu>
-                <Segment attached='top' className="charactersheet">
+                <Segment className="charactersheet">
                     <Grid>
                         <Overview/>
                         {getView()}

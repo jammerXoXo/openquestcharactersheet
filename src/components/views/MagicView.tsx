@@ -1,4 +1,11 @@
-import { Container, GridColumn, GridRow, Label, Segment } from "semantic-ui-react"
+import { useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { Button, Container, Form, GridColumn, GridRow, Label, Segment, Table, TableBody, TableCell, TableHeader, TableHeaderCell, TableRow } from "semantic-ui-react"
+import { baseSpell, characterStats, learnedSpell } from "../../types/types"
+import { deleteSpells, selectMagic } from "../../state/CharacterContext"
+import _ from "lodash"
+import { spellDescriptions } from "../../constants/magic"
+
 
 
 //A character has a limit of their POW in magnitude in spells. So, for example, a character with a POW of 10 could learn Babel (which has a fixed magnitude of 2), Coordination 3 Disruption 3 and Heal 2, which is a total of ten points of magnitude.
@@ -10,18 +17,102 @@ import { Container, GridColumn, GridRow, Label, Segment } from "semantic-ui-reac
 //If the casting test fails, the spell does not take effect, and the caster loses one magic point.
 
 const MagicView = () => {
+
+    const [sortColumn, setSortColumn] = useState<keyof learnedSpell>('name')
+    const [sortDirection, setSortDirection] = useState<"ascending" | "descending" | undefined>(undefined)
+    const [selected, setSelected] = useState<{[key: string]: number}>({} as {[key: string]: number})
+    const [deleting, setDeleting] = useState<boolean>(false)
+    const [addingSpell, setAddingSpell] = useState<boolean>(false)
+    const knownMagic = useSelector((state: { stats: characterStats }) => selectMagic(state))
+    const allMagic = spellDescriptions
+    const dispatch = useDispatch()
+
+
+
+    const updateSort = (col: keyof learnedSpell) => {
+        setSortColumn(col)
+        setSortDirection(sortDirection === "descending" || sortDirection === undefined ? "ascending" : "descending")
+    }
+
+    const getTableData = (magic: baseSpell[]) => {
+        let data = _.sortBy(magic, sortColumn)
+        if (sortDirection === 'descending') {
+            data = data.reverse()
+        }
+        console.log(data)
+        return (data.map((spell: baseSpell) => <TableRow key={spell.name}>
+                    <TableCell>{spell.name}</TableCell>
+                    <TableCell>{spell.type}</TableCell>
+                    <TableCell>{spell.magnitude}</TableCell>
+                    <TableCell>{spell.variable}</TableCell>
+                    <TableCell>{spell.tags}</TableCell>
+                </TableRow>)
+        )
+    }
+
+    const dispatchDeleteSpells = () => {
+        if (deleting) {
+            setDeleting(false)
+            dispatch(deleteSpells({spellNames: Object.keys(selected)}))
+            setSelected({})
+        } else {
+            setDeleting(true)
+        }
+    }
+
+    const addSpell = () => {
+
+    }
+
     return (
         <>
             <GridRow>
-                <GridColumn width={10}>
+                <GridColumn width={8}>
                     <Segment style={{display: 'flex', flex: '1 1', justifyContent: 'center', flexDirection: 'column'}}>
                         <Label attached='top'>Known Spells</Label>
-                        <Container>
-                            
+                        <Container style={{height: '467px'}}>
+                            <Table>
+                                <TableHeader>
+                                    <TableHeaderCell
+                                        sorted={sortColumn === 'name' ? sortDirection: undefined}
+                                        onClick={() => updateSort('name')}>
+                                        Spell
+                                    </TableHeaderCell>
+                                    <TableHeaderCell
+                                        sorted={sortColumn === 'type' ? sortDirection: undefined}
+                                        onClick={() => updateSort('type')}>
+                                        Type
+                                    </TableHeaderCell>
+                                    <TableHeaderCell
+                                        sorted={sortColumn === 'magnitude' ? sortDirection: undefined}
+                                        onClick={() => updateSort('magnitude')}>
+                                        Magnitude
+                                    </TableHeaderCell>
+                                    <TableHeaderCell
+                                        sorted={sortColumn === 'variable' ? sortDirection: undefined}
+                                        onClick={() => updateSort('variable')}>
+                                        Variable
+                                    </TableHeaderCell>
+                                    <TableHeaderCell
+                                        sorted={sortColumn === 'tags' ? sortDirection: undefined}
+                                        onClick={() => updateSort('tags')}>
+                                        Tags
+                                    </TableHeaderCell>
+                                </TableHeader>
+                                <TableBody>
+                                    {getTableData(addingSpell? allMagic: knownMagic)}
+                                </TableBody>
+                            </Table>
                         </Container>
                     </Segment>
+                    <Form>
+                        <div style={{display: 'flex', justifyContent: 'space-between', height: '35px', marginTop: '5px'}}>
+                            <Button icon='plus' label={{as: 'a', basic: true, content: 'Add spell'}} onClick={() => addSpell()}/>
+                            <Button icon='trash' disabled={Object.keys(selected).length < 1} label={{as: 'a', basic: true, content: deleting?'Are you sure?':'Delete selected'}} onClick={() => dispatchDeleteSpells()}/>
+                        </div>
+                    </Form>
                 </GridColumn>
-                <GridColumn width={6}>
+                <GridColumn width={8}>
 
                 </GridColumn>
             </GridRow>

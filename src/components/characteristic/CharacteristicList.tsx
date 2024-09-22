@@ -6,7 +6,7 @@ const CharacteristicList = () => {
 
     return (
         <div className="characteristiclist">
-            {(Object.entries(CHARACTERISTICS) as [characteristicsKeys, basicDescription][]).map(([key, value]) => <Characteristic target={key} display={value} type='characteristics'></Characteristic>)}
+            {(Object.entries(CHARACTERISTICS) as [characteristicsKeys, basicDescription][]).map(([key, value]) => <Characteristic key={key} target={key} display={value} type='characteristics'></Characteristic>)}
         </div>
     )
 }

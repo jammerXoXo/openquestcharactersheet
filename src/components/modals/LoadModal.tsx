@@ -37,7 +37,7 @@ const LoadModal = () => {
             }
             return null
         }).filter(x => !!x))
-    }, [setCharacters])
+    }, [setCharacters, loadModalState])
 
     const deleteChars = () => {
         if (deleting) {
@@ -85,7 +85,7 @@ const LoadModal = () => {
     }
 
     const content = uploading? (
-        <TextArea rows={29} placeholder='Paste JSON here...' style={{width: '430px', resize: 'none', borderWidth: '1px', borderColor: failedUpload? 'red': 'black'}} onChange={(e, {value}) => setUploadedJSON(String(value))}/>
+        <TextArea rows={29} placeholder='Paste JSON here...' style={{width: '430px', resize: 'none', borderWidth: '1px', borderColor: failedUpload? 'red': 'black'}} onChange={(_, {value}) => setUploadedJSON(String(value))}/>
         ):(
         <Table singleLine selectable basic='very'>
             <TableHeader>
@@ -95,7 +95,7 @@ const LoadModal = () => {
             <TableBody>
                 {characters.sort((a, b) => Number((new Date(a.meta.edited)) < (new Date(b.meta.edited)))).map(stats => {
                     return (
-                        <TableRow active={stats?.meta?.id in selected} onClick={() => updateSelected(stats?.meta?.id)}>
+                        <TableRow key={stats?.meta?.id} active={stats?.meta?.id in selected} onClick={() => updateSelected(stats?.meta?.id)}>
                             <TableCell>{stats?.info?.name? stats.info.name: 'unnamed'}</TableCell>
                             <TableCell>{stats?.meta?.edited}</TableCell>
                         </TableRow>

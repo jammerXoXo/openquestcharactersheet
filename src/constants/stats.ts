@@ -258,9 +258,9 @@ export const SKILLS: skillDescriptions = {
 }
 
 
-export type FORUMLAKEYS = Exclude<(skillsKeys | attributesKeys | countersKeys), 'armor' | 'movement' | 'growth' | 'fortune'>
+export type FORMULAKEYS = Exclude<(skillsKeys | attributesKeys | countersKeys), 'armor' | 'movement' | 'growth' | 'fortune'>
 
-export const FORMULAS : {[key in FORUMLAKEYS]: (characteristics: characteristics) => number} = {
+export const FORMULAS : {[key in FORMULAKEYS]: (characteristics: characteristics) => number} = {
     dodge: (characteristics: characteristics) => (characteristics.dexterity.current + 10),
     persistance: (characteristics: characteristics) => (characteristics.power.current + 10),
     resiliance: (characteristics: characteristics) => (characteristics.constitution.current + characteristics.power.current),

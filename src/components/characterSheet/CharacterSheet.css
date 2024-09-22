@@ -54,10 +54,11 @@
 }
 
 .charactersheet {
-    width: 1050px !important;
+    /* width: 1050px !important; */
     height: 100%;
     background-color: rgba(224, 205, 179, 0.123) !important;
     padding: 20px 20px 20px 20px;
+    margin: 0 !important;
 }
 
 @keyframes successanim {
@@ -115,7 +116,7 @@
 }
 
 .menubutton {
-    margin-top: 10px;
+    margin-top: 0px;
 }
 
 [contenteditable] {

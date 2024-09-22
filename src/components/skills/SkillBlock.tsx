@@ -33,7 +33,7 @@ const SkillBlock = ({type}: SkillBlockProps) => {
         <div style={{backgroundColor: getBackgroundColor(type), borderRadius: '10px', marginBottom: '8px'}}>
             <Label style={{marginBottom: '3px', borderRadius: '0px 0px 5px 5px'}}>{SKILLS[type].display}</Label>
             <div style={{display: 'flex', flexDirection: 'column', flexWrap: 'wrap', maxHeight: '250px'}}>
-                {(Object.entries(SKILLS[type].skills) as [skillsKeys, formulaDescription][]).map(([key, value]) => <Skill target={key} display={value} type='skills'></Skill>)}
+                {(Object.entries(SKILLS[type].skills) as [skillsKeys, formulaDescription][]).map(([key, value]) => <Skill key={key} target={key} display={value} type='skills'></Skill>)}
             </div>
         </div>
     )

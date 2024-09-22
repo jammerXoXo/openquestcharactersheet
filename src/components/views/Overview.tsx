@@ -16,7 +16,7 @@ const Overview = () => {
                     <AttributeGrid/>
                 </GridColumn>
                 <GridColumn width={6}>
-                    <PersonalDetails/>
+                    <PersonalDetails key='personalDetails' />
                 </GridColumn>
             </GridRow>
         </>
