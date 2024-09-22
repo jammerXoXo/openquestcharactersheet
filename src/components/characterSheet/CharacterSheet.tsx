@@ -14,6 +14,8 @@ import { newCharacter } from "../../state/CharacterContext"
 import { saveFile } from "../../utils/utils"
 import { characterStats } from "../../types/types"
 import Overview from "../views/Overview"
+import InventoryView from "../views/InventoryView"
+import NotesView from "../views/NotesView"
 
 const CharacterSheet = () => {
     const {editingMode, setEditingMode, activeSheet, setActiveSheet} = useContext(SheetContext)
@@ -27,11 +29,10 @@ const CharacterSheet = () => {
             return <StatsView/>
         } else if (activeSheet === 'magic') {
             return <MagicView/>
-        // } else if (activeSheet === 'inventory') {
-        //     return <InventoryView/>
-        // } else if (activeSheet === 'notes') {
-        //     return <NotesView/>
-        // }
+        } else if (activeSheet === 'inventory') {
+            return <InventoryView/>
+        } else if (activeSheet === 'notes') {
+            return <NotesView/>
         }
         return null
     }

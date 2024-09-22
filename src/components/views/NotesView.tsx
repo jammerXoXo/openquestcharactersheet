@@ -1,56 +1,25 @@
-import AttributeGrid from "components/attribute/AttributeGrid"
-import CharacteristicList from "components/characteristic/CharacteristicList"
-import Counter from "components/counter/Counter"
-import PersonalDetails from "components/personalDetails/PersonalDetails"
-import Portrait from "components/portrait/Portrait"
-import SkillBlock from "components/skills/SkillBlock"
-import StoryElement from "components/storyArc/StoryElement"
-import { Grid, GridColumn, GridRow } from "semantic-ui-react"
+import { useDispatch, useSelector } from "react-redux"
+import { GridColumn, GridRow, Segment, TextArea } from "semantic-ui-react"
+import { selectNotes, updateNotes } from "../../state/CharacterContext"
+import { characterStats } from "../../types/types"
 
 
 const NotesView = () => {
+    const notes = useSelector((state: { stats: characterStats }) => selectNotes(state))
+    const dispatch = useDispatch()
+
     return (
-        <Grid >
-            <GridRow>
-                <GridColumn width={3}>
-                    <CharacteristicList/>
-                </GridColumn>
-                <GridColumn width={7}>
-                    <AttributeGrid/>
-                </GridColumn>
-                <GridColumn width={6}>
-                    <PersonalDetails/>
-                </GridColumn>
-            </GridRow>
-            <GridRow>
-                <GridColumn width={5}>
-                    <StoryElement type='saga'/>
-                </GridColumn>
-                <GridColumn width={5}>
-                    <StoryElement type='quest'/>
-                </GridColumn>
-                <GridColumn width={2}>
-                    <Counter target="growth" display="Growth"/>
-                    <Counter target="fortune" display="Fortune"/>
-                </GridColumn>
-                <GridColumn width={4}>
-                    <Portrait/>
-                </GridColumn>
-            </GridRow>
-            <GridRow>
-                <GridColumn width={4}>
-                    <SkillBlock type='combat'/>
-                    <SkillBlock type='magic'/>
-                </GridColumn>
-                <GridColumn width={4}>
-                    <SkillBlock type='resistances'/>
-                    <SkillBlock type='knowledge'/>
-                </GridColumn>
-                <GridColumn width={8}>
-                    <SkillBlock type='practical' />
-                </GridColumn>
-            </GridRow>
-        </Grid>
+        <GridRow>
+            <GridColumn width={16}>
+                <Segment>
+                    <TextArea
+                        placeHolder='Tell your story here...'
+                        style={{marginTop: '10px', width: '100%', height: '529px', resize: 'none'}}
+                        onChange={(_, {value}) => dispatch(updateNotes({newValue: String(value)}))}
+                        value={notes}/>
+                </Segment>
+            </GridColumn>
+        </GridRow>
     )
 }
 

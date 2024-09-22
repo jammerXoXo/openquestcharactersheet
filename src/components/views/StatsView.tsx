@@ -20,10 +20,10 @@ const StatsView = () => {
             </GridRow> */}
             <GridRow>
                 <GridColumn width={6}>
-                    {/* <StoryElement type='saga'/> */}
+                    <StoryElement type='saga'/>
                 </GridColumn>
                 <GridColumn width={6}>
-                    {/* <StoryElement type='quest'/> */}
+                    <StoryElement type='quest'/>
                 </GridColumn>
                 <GridColumn width={4}>
                     <Portrait/>

@@ -44,12 +44,12 @@ const StoryModal = () => {
                                 label='Name'
                                 placeholder='Enter name here...'
                                 value={motives[storyModalState.id].name} 
-                                onChange={(e, {value}) => dispatchUpdateStory({story: value})}/>
+                                onChange={(_, {value}) => dispatchUpdateStory({name: value})}/>
                             <TextArea 
                                 rows='25' 
                                 placeholder='Notes...' 
                                 style={{marginTop: '10px', marginBottom: '10px'}}
-                                onChange={(e, {value}) => dispatchUpdateStory({story: String(value)})}
+                                onChange={(_, {value}) => dispatchUpdateStory({story: String(value)})}
                                 value={motives[storyModalState.id].story}/>
                             <div style={{display: 'flex', justifyContent: 'space-between', height: '35px'}}>
                                 <Button icon='x icon' label={{as: 'a', basic: true, content: 'Close'}} onClick={() => {setStoryModalState({open: false} as storyModalState)}}/>

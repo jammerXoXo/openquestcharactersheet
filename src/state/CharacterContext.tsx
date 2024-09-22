@@ -4,7 +4,9 @@ import { v4 as uuid} from 'uuid'
 import { createSlice, configureStore} from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { applyForumlas, calculateCurrent, getSkillGrowthCost } from '../utils/utils'
-import { attributesKeys, characteristicsKeys, characterStats, countersKeys, motivesKeys, skillsKeys, story, trackedInfoKeys } from '../types/types'
+import { attributesKeys, characteristicsKeys, characterStats, countersKeys, learnedSpell, motivesKeys, skillsKeys, story, trackedInfoKeys } from '../types/types'
+import { spellDescriptions } from '../constants/magic'
+import { itemDescriptions } from '../constants/items'
 
 
 
@@ -398,7 +400,8 @@ const getDefaultCharacter = (uuid:string): characterStats => {
         },
         magic: [
         ],
-        inventory: []
+        inventory: [],
+        notes: ''
     })
 }
 
@@ -413,6 +416,11 @@ const getLastCharacter = () => {
         }
     }
     return structuredClone(getDefaultCharacter(String(uuid())))
+}
+
+const addGrowthPoints = (state: characterStats, growthPoints: number) => {
+    state.attributes.growth.point_mod += growthPoints
+    state.attributes.growth.current = calculateCurrent(state.attributes.growth)
 }
 
 const statsSlice = createSlice({
@@ -431,8 +439,7 @@ const statsSlice = createSlice({
                 return
             }
             
-            state.attributes.growth.point_mod -= 5 * increment
-            state.attributes.growth.current = calculateCurrent(state.attributes.growth)
+            addGrowthPoints(state, -5 * increment)
 
             state.characteristics[target].point_mod += increment
             state.characteristics[target].current = calculateCurrent(state.characteristics[target])
@@ -451,8 +458,7 @@ const statsSlice = createSlice({
                 return
             }
 
-            state.attributes.growth.point_mod -= getSkillGrowthCost(state.skills[target].current, increment)
-            state.attributes.growth.current = calculateCurrent(state.attributes.growth)
+            addGrowthPoints(state, -1 * getSkillGrowthCost(state.skills[target].current, increment))
 
             state.skills[target].point_mod += increment
             state.skills[target].current = calculateCurrent(state.skills[target])
@@ -486,8 +492,22 @@ const statsSlice = createSlice({
             state.meta.edited = (new Date()).toLocaleString()
         },
         loadCharacter: (state: characterStats, action: PayloadAction<{newValue: characterStats}>) => {
-            localStorage.setItem(`options/lastsaved`, action.payload.newValue?.meta?.id)
-            state.meta.edited = (new Date()).toLocaleString()
+            const loadChar = action.payload.newValue
+            applyForumlas(loadChar)
+
+            localStorage.setItem(`options/lastsaved`, loadChar?.meta?.id)
+            loadChar.meta.edited = (new Date()).toLocaleString()
+
+            state.info = loadChar.info
+            state.characteristics = loadChar.characteristics
+            state.attributes = loadChar.attributes
+            state.counters = loadChar.counters
+            state.inventory = loadChar.inventory
+            state.magic = loadChar.magic
+            state.motives = loadChar.motives
+            state.skills = loadChar.skills
+            state.meta = loadChar.meta
+            state.notes = loadChar.notes
         },
         newCharacter: (state: characterStats) => {
             const newChar = structuredClone(getDefaultCharacter(String(uuid())))
@@ -503,9 +523,52 @@ const statsSlice = createSlice({
             state.motives = newChar.motives
             state.skills = newChar.skills
             state.meta = newChar.meta
+            state.notes = newChar.notes
         },
         deleteSpells: (state: characterStats, action: PayloadAction<{spellNames: string[]}>) => {
-            state.magic = state.magic.filter(spell => !action.payload.spellNames.indexOf(spell.name))
+            state.magic = state.magic.filter(spell => action.payload.spellNames.indexOf(spell.name) === -1)
+        },
+        addSpells: (state: characterStats, action: PayloadAction<{spellNames: string[]}>) => {
+            action.payload.spellNames.forEach((spellName: string) => state.magic.push({
+                name: spellDescriptions[spellName].name,
+                magnitude: spellDescriptions[spellName].magnitude,
+                variable: spellDescriptions[spellName].variable,
+                tags: spellDescriptions[spellName].tags,
+                type: spellDescriptions[spellName].type,
+                learnedMagnitude: spellDescriptions[spellName].magnitude,
+                remainingMagnitude: spellDescriptions[spellName].magnitude
+            }))
+        },
+        updateSpell: (state: characterStats, action: PayloadAction<Partial<learnedSpell>>) => {
+
+            if (action.payload.name) {
+                state.magic = state.magic.map((x) => {
+                    if (x.name === action.payload.name) {
+                        if (action.payload.learnedMagnitude) {
+                            const costDiff = (action.payload.learnedMagnitude - x.learnedMagnitude) * (x.type === 'divine'? 2: 1)
+                            addGrowthPoints(state, -costDiff)
+                        }
+                        return {...x, ...action.payload}
+                    }
+                    return x
+                })
+            }
+        },
+        deleteItems: (state: characterStats, action: PayloadAction<{itemNames: string[]}>) => {
+            state.inventory = state.inventory.filter(item => action.payload.itemNames.indexOf(item.name) === -1)
+        },
+        addItems: (state: characterStats, action: PayloadAction<{itemNames: string[]}>) => {
+            action.payload.itemNames.forEach((itemName: string) => state.inventory.push({
+                name: itemDescriptions[itemName].name,
+                tags: itemDescriptions[itemName].tags,
+                enc: itemDescriptions[itemName].enc,
+                type: itemDescriptions[itemName].type,
+                cost: itemDescriptions[itemName].cost,
+                description: itemDescriptions[itemName].description,
+            }))
+        },
+        updateNotes: (state: characterStats, action: PayloadAction<{newValue: string}>) => {
+            state.notes = action.payload.newValue
         }
     },
     selectors: {
@@ -515,7 +578,9 @@ const statsSlice = createSlice({
         selectMotive: (state: characterStats, target: motivesKeys) => state.motives[target],
         selectInfo: (state: characterStats) => state.info,
         selectCounter: (state: characterStats, target: countersKeys) => state.counters[target],
-        selectMagic: (state: characterStats) => state.magic
+        selectMagic: (state: characterStats) => state.magic,
+        selectInventory: (state: characterStats) => state.inventory,
+        selectNotes: (state: characterStats) => state.notes
     }
 })
 
@@ -542,6 +607,6 @@ store.subscribe(() => {
 const { actions, selectors, reducer } = statsSlice
 
 export const { dispatch } = store
-export const { updateCharacteristic, updateSkill, updateStory, deleteStory, updateDetail, applyDamage, updateCounter, updateAttribute, loadCharacter, newCharacter, deleteSpells } = actions
-export const { selectAttribute, selectCharacteristic, selectSkill, selectMotive, selectInfo, selectCounter, selectMagic } = selectors
+export const { updateCharacteristic, updateSkill, updateStory, deleteStory, updateDetail, applyDamage, updateCounter, updateAttribute, loadCharacter, newCharacter, deleteSpells, addSpells, updateSpell, deleteItems, addItems, updateNotes } = actions
+export const { selectAttribute, selectCharacteristic, selectSkill, selectMotive, selectInfo, selectCounter, selectMagic, selectInventory, selectNotes } = selectors
 export default reducer

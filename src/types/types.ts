@@ -51,6 +51,11 @@ export type learnedSpell = baseSpell & {
 
 export type item = {
     name: string
+    type: itemTypes 
+    enc: number
+    cost: string
+    tags: string 
+    description: string 
 }
 
 export type characteristicsKeys = 'strength' | 'constitution' | 'dexterity' | 'size' | 'intelligence' | 'power' | 'charisma'
@@ -80,6 +85,9 @@ export type meta = { [key in metasKeys]: string }
 export type magicsTypes = 'personal' | 'divine' | 'sorcery'
 export type magic = learnedSpell[]
 
+export type itemTypes = 'armor' | 'ranged weapon' | 'melee weapon' | 'other'
+export type inventory = item[]
+
 export type trackedInfoKeys = 'image' | 'name' | 'gender' | 'age' | 'culture' | 'concept' | 'rank' | 'org'
 export type trackedInfo = { [key in trackedInfoKeys]: string }
 
@@ -94,7 +102,8 @@ export type characterStats = {
     counters: counters
     meta: meta
     magic: magic
-    inventory: item[]
+    inventory: inventory
+    notes: string
 }
 
 export type basicDescription = {

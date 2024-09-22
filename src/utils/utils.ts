@@ -1,5 +1,6 @@
+import { spellDescriptions } from "../constants/magic"
 import { FORMULAS, FORMULAKEYS } from "../constants/stats"
-import { characterStats, characterStatsKeys, countersKeys, trackedStat } from "../types/types"
+import { characterStats, characterStatsKeys, countersKeys, learnedSpell, spellDescription, trackedStat } from "../types/types"
 
 const getRandomNumber = (max: number) => {
     return Math.floor(Math.random() * max)
@@ -81,8 +82,19 @@ export const getSkillGrowthCost = (skill: number, increment: number) => {
     } 
 
     return sign*cost
+}
 
-
+export const getBaseSpellGrowthCosts = (spellNames: string[]) => {
+    return spellNames.reduce<number>((acc: number, spell: string) => {
+        const s = spellDescriptions[spell]
+        if (s.type === 'divine') {
+            return acc + s.magnitude * 2 
+        } else if (s.type === 'personal') {
+            return acc + s.magnitude
+        } else {
+            return acc + 3
+        }
+    }, 0)
 }
 
 const applyForumla = (stats: characterStats, type: characterStatsKeys) => {
