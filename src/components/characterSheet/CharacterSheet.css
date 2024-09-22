@@ -1,0 +1,132 @@
+.attributecontainer {
+    display: flex;
+    min-height: 180px;
+}
+
+.attributegrid {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 10px;
+    margin-right: 15px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    flex: 1 1 0;
+}
+
+.attributeinput > input{
+    border-width: 0px !important;
+    width: 55px;
+}
+
+.attribute {
+    display: flex;
+    flex-direction: row;
+    flex: 1 1 95px;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-bottom: 30px;
+}
+
+.characteristiclist {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    margin-right: 15px;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+
+}
+
+.characteristic {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 1px;
+    margin-left: 5px;
+}
+
+.numberroller {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+.charactersheet {
+    width: 1050px !important;
+    height: 100%;
+    background-color: rgba(224, 205, 179, 0.123) !important;
+    padding: 20px 20px 20px 20px;
+}
+
+@keyframes successanim {
+    0%   {opacity: 0;}
+    100% {opacity: 100;}
+  }
+
+.successcard {
+    position: relative;
+    animation-name: successanim;
+    animation-duration: 4s;
+    animation-delay: 1s;
+    animation-fill-mode: forwards;
+    font-style: italic;
+    font-size: 35px;
+    margin-top: 10px;
+}
+
+.storyarc:hover {
+    background-color: rgba(221, 221, 221, 0.486);
+    cursor: pointer;
+    border-radius: 25px;
+    padding: 2px 10px 2px 10px;
+}
+
+.storymodal {
+    display: flex;
+    flex-direction: column;
+}
+
+.storyElementPicker {
+    border-style: solid;
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0.123);
+    align-items: flex-start;
+}
+
+.growthpopup {
+    font-size: 8px;
+    opacity: 80%;
+}
+
+.conceptlabel {
+    width: 60px; 
+    padding-top: 8px !important;
+    padding-bottom: 3px !important;
+    background-color: #f0f0f0 !important;
+    border-radius: 5px 0px 0px 5px !important;
+    color:black !important;
+}
+
+.detailinput > input {
+    flex-shrink: 1 !important;
+    min-width: 50px;
+}
+
+.menubutton {
+    margin-top: 10px;
+}
+
+[contenteditable] {
+    outline: 0px solid transparent;
+  }
+
+
+.App {
+    height: 100%;
+}
+
+#root {
+    height: 100%;
+}
