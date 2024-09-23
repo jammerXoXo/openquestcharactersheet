@@ -51,7 +51,7 @@ const Attribute = ({target, display}: AttributeProps) => {
 
     const getDisplay = () => {
         if (target === 'hitPoints' || target === 'magicPoints') {
-            return <span> {attribute.current - attribute.damage} / {attribute.current}</span>
+            return <span> {attribute.current - (attribute?.damage ?? 0)} / {attribute.current}</span>
         } else if (target === 'damageMod') {
             return <span>{getDamageModText(attribute.current)}</span>  
         } else {
@@ -64,7 +64,7 @@ const Attribute = ({target, display}: AttributeProps) => {
             onOpen={() => setPopopOpen(true)}
             onClose={() => setPopopOpen(false)}
             open={popupOpen}
-            content={<Input onKeyPress={(e) => e.key === 'Enter' && applyValue()} size='mini' action={{ icon: 'plus square', onClick: () => applyValue()}} onChange={(e, {value}) => setAddition(value)} placeholder='Add amount...' error={!valid}/>}
+            content={<Input onKeyPress={(e:{key: string}) => e.key === 'Enter' && applyValue()} size='mini' action={{ icon: 'plus square', onClick: () => applyValue()}} onChange={(e, {value}) => setAddition(value)} placeholder='Add amount...' error={!valid}/>}
             on='click'
             disabled={target==='damageMod'}
             trigger={

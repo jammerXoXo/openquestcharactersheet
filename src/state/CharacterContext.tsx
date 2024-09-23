@@ -482,7 +482,8 @@ const statsSlice = createSlice({
         },
         applyDamage: (state: characterStats, action: PayloadAction<{target: attributesKeys, newValue: number}>) => {
             if ('damage' in state.attributes[action.payload.target]) {
-                state.attributes[action.payload.target].damage -= action.payload.newValue
+                const newDamage = (state.attributes[action.payload.target].damage ?? 0) - action.payload.newValue
+                state.attributes[action.payload.target] = {...state.attributes[action.payload.target], damage: newDamage}
             }
             state.meta.edited = (new Date()).toLocaleString()
         },

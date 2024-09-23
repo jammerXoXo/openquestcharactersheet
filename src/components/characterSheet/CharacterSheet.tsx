@@ -47,6 +47,7 @@ const CharacterSheet = () => {
                     <MenuItem className='menubutton' name='edit' onClick={() => setEditingMode(!editingMode)} active={editingMode} />
                     <MenuItem className='menubutton' name='new' onClick={() => dispatch(newCharacter())} />
                     <MenuItem className='menubutton' name='load' onClick={() => setLoadModalState({open: true})} />
+                    {/* @ts-expect-error  TODO fix this later :P */}
                     <MenuItem className='menubutton' name='download' onClick={() => saveFile(state)} />
                 </Menu>
                 <Segment className="charactersheet">

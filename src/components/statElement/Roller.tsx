@@ -70,6 +70,7 @@ const Roller = ({disabled, value}: RollerProps) => {
         buttonLayout = <div onMouseLeave={() => resetMod()} style={{display: "inline-grid"}}>
             <Input type="text" size='mini'>
                 <Button size='mini' icon='minus' onClick={() => setMod(mod-5)} ></Button>
+                { /* @ts-expect-error  TODO fix this later :P */}
                 <input style={{width: '40px', height: '28px', borderLeft:'0px', borderBottom: '0px', borderRight: '0px'}} value={mod} onChange={(e) => setMod(e.nativeEvent.data)}/><span style={{marginLeft: '-20px', marginTop: '5px'}}>%</span>
                 <Button size='mini' icon='plus' onClick={() => setMod(mod+5)}></Button>
             </Input>

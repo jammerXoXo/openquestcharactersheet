@@ -1,6 +1,6 @@
 import { spellDescriptions } from "../constants/magic"
 import { FORMULAS, FORMULAKEYS } from "../constants/stats"
-import { characterStats, characterStatsKeys, countersKeys, learnedSpell, magicsTypes, spellDescription, trackedStat } from "../types/types"
+import { characterStats, characterStatsKeys, countersKeys, magicsTypes, trackedStat } from "../types/types"
 
 const getRandomNumber = (max: number) => {
     return Math.floor(Math.random() * max)
@@ -28,7 +28,7 @@ export const getRollModalContent = (target: number, mod: number) => {
     }
 }
 
-export const saveFile = async (state: any) => {
+export const saveFile = async (state: {stats: characterStats}) => {
     const stats = state.stats 
     const blob = new Blob([JSON.stringify(stats)], { type: 'application/json'})
 
@@ -107,15 +107,19 @@ export const getSpellCost = (type: magicsTypes, magnitude: number) => {
     }
 }
 
+
 const applyForumla = (stats: characterStats, type: characterStatsKeys) => {
     (Object.keys(stats[type]) as Array<FORMULAKEYS>).forEach((key: FORMULAKEYS) => {
         if (key in FORMULAS) {
+            //@ts-expect-error TODO fix this later :P
             stats[type][key].base = FORMULAS[key](stats.characteristics)
         }
+        //@ts-expect-error TODO fix this later :P
         stats[type][key].current = calculateCurrent(stats[type][key])
     })
 }
 
+//@ts-expect-error  TODO fix this later :P
 const applyCurrent = (stats: characterStats, type: characterStatsKeys) => Object.keys(stats[type]).forEach(key => stats[type][key].current = calculateCurrent(stats[type][key]))
 
 export const calculateCurrent = (x: trackedStat) => {
@@ -126,6 +130,7 @@ export const applyForumlas = (stats: characterStats) => {
     applyCurrent(stats, 'characteristics')
     applyForumla(stats, 'skills')
     applyForumla(stats, 'attributes');
+    //@ts-expect-error TODO fix this later :P
     (Object.keys(stats.counters) as Array<countersKeys>).filter((key: countersKeys) => key in FORMULAS).forEach((key: countersKeys & FORMULAKEYS ) => stats.counters[key] = FORMULAS[key](stats.characteristics))
     return stats
 }

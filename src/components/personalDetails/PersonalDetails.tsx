@@ -2,7 +2,6 @@ import { Form, Input, Label, TextArea } from "semantic-ui-react"
 import { characterStats, trackedInfoKeys } from "../../types/types"
 import { useDispatch, useSelector } from "react-redux"
 import { selectInfo, updateDetail } from "../../state/CharacterContext"
-import { useEffect } from "react"
 
 
 type PersonalDetailProps = {
