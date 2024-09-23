@@ -64,7 +64,7 @@ const Attribute = ({target, display}: AttributeProps) => {
             onOpen={() => setPopopOpen(true)}
             onClose={() => setPopopOpen(false)}
             open={popupOpen}
-            content={<Input onKeyPress={(e:{key: string}) => e.key === 'Enter' && applyValue()} size='mini' action={{ icon: 'plus square', onClick: () => applyValue()}} onChange={(e, {value}) => setAddition(value)} placeholder='Add amount...' error={!valid}/>}
+            content={<Input onKeyPress={(e:{key: string}) => e.key === 'Enter' && applyValue()} size='mini' action={{ icon: 'plus square', onClick: () => applyValue()}} onChange={(_, {value}) => setAddition(value)} placeholder='Add amount...' error={!valid}/>}
             on='click'
             disabled={target==='damageMod'}
             trigger={

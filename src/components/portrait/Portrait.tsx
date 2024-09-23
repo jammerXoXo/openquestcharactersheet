@@ -19,7 +19,7 @@ const Portrait = () => {
                 size='mini' 
                 action={{content:'set url', onClick: () => dispatch(updateDetail({ target: 'image', newValue: imageUrl}))}} 
                 style={{marginRight: '18px'}} 
-                onChange={(e, {value}) => setImageUrl(value)}
+                onChange={(_, {value}) => setImageUrl(value)}
                 value={imageUrl}/>
         </Popup>
     )

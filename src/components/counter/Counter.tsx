@@ -35,7 +35,7 @@ const Counter = ({target, display}: CounterProps) => {
             onOpen={() => setPopopOpen(true)}
             onClose={() => setPopopOpen(false)}
             open={popupOpen}
-            content={<Input onKeyPress={(e) => e.key === 'Enter' && applyValue()} size='mini' action={{ icon: 'plus square', onClick: () => applyValue()}} onChange={(e, {value}) => setAddition(value)} placeholder='Add amount...' error={!valid}/>}
+            content={<Input onKeyPress={(e: {key: string}) => e.key === 'Enter' && applyValue()} size='mini' action={{ icon: 'plus square', onClick: () => applyValue()}} onChange={(_, {value}) => setAddition(value)} placeholder='Add amount...' error={!valid}/>}
             on='click'
             trigger={
             <div className="attribute" style={{flex: '1 1 60px'}}>
