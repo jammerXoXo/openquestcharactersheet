@@ -77,7 +77,7 @@ const MagicView = () => {
     }
 
     const getKnownSpellTableData = () => {
-        let data = _.sortBy(knownMagic.map(x => ({...x, magnitude: Math.max(x.magnitude, x.learnedMagnitude)})), sortColumn)
+        let data = _.sortBy(knownMagic, sortColumn)
         if (sortDirection === 'descending') {
             data = data.reverse()
         }
@@ -90,7 +90,7 @@ const MagicView = () => {
                         open={popupOpen}
                         on='click'
                         disabled={!spell.variable || spell.type === 'sorcery'} 
-                        trigger={<TableCell>{spell.magnitude}{spell.variable? '+': ''}{spell.type === 'divine'? ` (${spell.remainingMagnitude})`:''}</TableCell>}
+                        trigger={<TableCell>{spell.magnitude}{spell.variable? '+': ''}{spell.type === 'divine' || spell.type ==='personal' ? ` (${spell.learnedMagnitude})`:''}</TableCell>}
                         content={<Input onKeyPress={(e) => e.key === 'Enter' && dispatchUpdateSpells({name: spell.name, learnedMagnitude: newMagnitude})} size='mini' action={{ content: 'set', onClick: () => dispatchUpdateSpells({name: spell.name, learnedMagnitude: newMagnitude})}} onChange={(e, {value}) => validateNewMagnitude(value, spell.magnitude)} placeholder='Set Magnitude...' error={!valid}/>}/>
                     <TableCell>{spell.tags}</TableCell>
                 </TableRow>)

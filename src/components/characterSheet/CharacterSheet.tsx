@@ -12,7 +12,6 @@ import MagicView from "../views/MagicView"
 import { useDispatch, useStore } from "react-redux"
 import { newCharacter } from "../../state/CharacterContext"
 import { saveFile } from "../../utils/utils"
-import { characterStats } from "../../types/types"
 import Overview from "../views/Overview"
 import InventoryView from "../views/InventoryView"
 import NotesView from "../views/NotesView"
@@ -22,7 +21,7 @@ const CharacterSheet = () => {
     const {setLoadModalState} = useContext(ModalContext)
     const dispatch = useDispatch()
     const store = useStore()
-    const stats = store.getState() as characterStats
+    const state = store.getState()
 
     const getView = () => {
         if (activeSheet === 'stats') {
@@ -48,7 +47,7 @@ const CharacterSheet = () => {
                     <MenuItem className='menubutton' name='edit' onClick={() => setEditingMode(!editingMode)} active={editingMode} />
                     <MenuItem className='menubutton' name='new' onClick={() => dispatch(newCharacter())} />
                     <MenuItem className='menubutton' name='load' onClick={() => setLoadModalState({open: true})} />
-                    <MenuItem className='menubutton' name='download' onClick={() => saveFile(stats)} />
+                    <MenuItem className='menubutton' name='download' onClick={() => saveFile(state)} />
                 </Menu>
                 <Segment className="charactersheet">
                     <Grid>

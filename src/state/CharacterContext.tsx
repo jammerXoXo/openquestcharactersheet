@@ -3,7 +3,7 @@ import { v4 as uuid} from 'uuid'
 
 import { createSlice, configureStore} from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
-import { applyForumlas, calculateCurrent, getSkillGrowthCost } from '../utils/utils'
+import { applyForumlas, calculateCurrent, getBaseSpellGrowthCosts, getSkillGrowthCost, getSpellCost } from '../utils/utils'
 import { attributesKeys, characteristicsKeys, characterStats, countersKeys, learnedSpell, motivesKeys, skillsKeys, story, trackedInfoKeys } from '../types/types'
 import { spellDescriptions } from '../constants/magic'
 import { itemDescriptions } from '../constants/items'
@@ -419,8 +419,14 @@ const getLastCharacter = () => {
 }
 
 const addGrowthPoints = (state: characterStats, growthPoints: number) => {
+    if (state.attributes.growth.current + growthPoints < 0) {
+        return false
+    }
+
     state.attributes.growth.point_mod += growthPoints
     state.attributes.growth.current = calculateCurrent(state.attributes.growth)
+
+    return true
 }
 
 const statsSlice = createSlice({
@@ -435,11 +441,10 @@ const statsSlice = createSlice({
             if ( newValue > 18 || newValue < ((action.payload.target === 'size' || action.payload.target === 'intelligence')? 8 : 3)) {
                 return
             }
-            if (action.payload.increment * 5 > state.attributes.growth.current) {
+            
+            if (!addGrowthPoints(state, -5 * increment)) {
                 return
             }
-            
-            addGrowthPoints(state, -5 * increment)
 
             state.characteristics[target].point_mod += increment
             state.characteristics[target].current = calculateCurrent(state.characteristics[target])
@@ -454,11 +459,10 @@ const statsSlice = createSlice({
             if (state.skills[target].current + increment > 100 || state.skills[target].current + increment < 0) {
                 return
             }
-            if (getSkillGrowthCost(state.skills[target].current, increment) > state.attributes.growth.current) {
+
+            if (!addGrowthPoints(state, -1 * getSkillGrowthCost(state.skills[target].current, increment))) {
                 return
             }
-
-            addGrowthPoints(state, -1 * getSkillGrowthCost(state.skills[target].current, increment))
 
             state.skills[target].point_mod += increment
             state.skills[target].current = calculateCurrent(state.skills[target])
@@ -526,27 +530,41 @@ const statsSlice = createSlice({
             state.notes = newChar.notes
         },
         deleteSpells: (state: characterStats, action: PayloadAction<{spellNames: string[]}>) => {
-            state.magic = state.magic.filter(spell => action.payload.spellNames.indexOf(spell.name) === -1)
+            const result = state.magic.reduce<{pass: Array<learnedSpell>, cost: number}>((acc, spell) => {
+                return action.payload.spellNames.indexOf(spell.name) === -1? { pass: [...acc.pass, spell], cost: acc.cost} : {pass: acc.pass, cost: (acc.cost + getSpellCost(spell.type, spell.learnedMagnitude))}
+            }, {pass: [] as learnedSpell[], cost: 0})
+            // state.magic = state.magic.filter(spell => action.payload.spellNames.indexOf(spell.name) === -1)
+            state.magic = result.pass
+            addGrowthPoints(state, result.cost)     
         },
         addSpells: (state: characterStats, action: PayloadAction<{spellNames: string[]}>) => {
-            action.payload.spellNames.forEach((spellName: string) => state.magic.push({
-                name: spellDescriptions[spellName].name,
-                magnitude: spellDescriptions[spellName].magnitude,
-                variable: spellDescriptions[spellName].variable,
-                tags: spellDescriptions[spellName].tags,
-                type: spellDescriptions[spellName].type,
-                learnedMagnitude: spellDescriptions[spellName].magnitude,
-                remainingMagnitude: spellDescriptions[spellName].magnitude
-            }))
+            console.log('add')
+            console.log(action.payload)
+            const cost = getBaseSpellGrowthCosts(action.payload.spellNames)
+
+            if (addGrowthPoints(state, -cost)) {
+                action.payload.spellNames.forEach((spellName: string) => state.magic.push({
+                    name: spellDescriptions[spellName].name,
+                    magnitude: spellDescriptions[spellName].magnitude,
+                    variable: spellDescriptions[spellName].variable,
+                    tags: spellDescriptions[spellName].tags,
+                    type: spellDescriptions[spellName].type,
+                    learnedMagnitude: 0,
+                    remainingMagnitude: spellDescriptions[spellName].magnitude
+                }))
+            }
         },
         updateSpell: (state: characterStats, action: PayloadAction<Partial<learnedSpell>>) => {
-
+            console.log('update')
+            console.log(action.payload)
             if (action.payload.name) {
                 state.magic = state.magic.map((x) => {
                     if (x.name === action.payload.name) {
                         if (action.payload.learnedMagnitude) {
-                            const costDiff = (action.payload.learnedMagnitude - x.learnedMagnitude) * (x.type === 'divine'? 2: 1)
-                            addGrowthPoints(state, -costDiff)
+                            const costDiff = (x.type === 'sorcery'? 3: (action.payload.learnedMagnitude - x.learnedMagnitude) * (x.type === 'divine'? 2: 1))
+                            if (!addGrowthPoints(state, -costDiff)) {
+                                return x
+                            }
                         }
                         return {...x, ...action.payload}
                     }

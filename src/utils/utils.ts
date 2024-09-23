@@ -1,6 +1,6 @@
 import { spellDescriptions } from "../constants/magic"
 import { FORMULAS, FORMULAKEYS } from "../constants/stats"
-import { characterStats, characterStatsKeys, countersKeys, learnedSpell, spellDescription, trackedStat } from "../types/types"
+import { characterStats, characterStatsKeys, countersKeys, learnedSpell, magicsTypes, spellDescription, trackedStat } from "../types/types"
 
 const getRandomNumber = (max: number) => {
     return Math.floor(Math.random() * max)
@@ -28,12 +28,12 @@ export const getRollModalContent = (target: number, mod: number) => {
     }
 }
 
-export const saveFile = async (stats: characterStats) => {
-
+export const saveFile = async (state: any) => {
+    const stats = state.stats 
     const blob = new Blob([JSON.stringify(stats)], { type: 'application/json'})
 
     const a = document.createElement('a')
-    a.download = stats.info.name ?? stats.meta.id
+    a.download = stats.info?.name ?? stats.meta.id
     a.href = URL.createObjectURL(blob)
     a.addEventListener('click', () => {
       setTimeout(() => URL.revokeObjectURL(a.href), 30 * 1000)
@@ -95,6 +95,16 @@ export const getBaseSpellGrowthCosts = (spellNames: string[]) => {
             return acc + 3
         }
     }, 0)
+}
+
+export const getSpellCost = (type: magicsTypes, magnitude: number) => {
+    if (type === 'divine') {
+        return magnitude * 2 
+    } else if (type === 'personal') {
+        return magnitude
+    } else {
+        return 3
+    }
 }
 
 const applyForumla = (stats: characterStats, type: characterStatsKeys) => {
