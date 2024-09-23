@@ -59,6 +59,7 @@
     background-color: rgba(224, 205, 179, 0.123) !important;
     padding: 20px 20px 20px 20px;
     margin: 0 !important;
+    background-color: white;
 }
 
 @keyframes successanim {
@@ -130,4 +131,12 @@
 
 #root {
     height: 100%;
+}
+
+.sheetcontainer {
+    background-color: rgba(240, 234, 223, 0.973);
+}
+
+.menu {
+    background-color: rgba(231, 231, 231, 0.973) !important;
 }

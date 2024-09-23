@@ -41,7 +41,7 @@ const CharacterSheet = () => {
             <RollModal/>
             <StoryModal/>
             <LoadModal />
-            <Container >
+            <Container className="sheetcontainer" >
                 <Menu attached='top' >
                     <MenuItem position="right" className='menubutton' name='dice tray' disabled={true}/>
                     <MenuItem className='menubutton' name='edit' onClick={() => setEditingMode(!editingMode)} active={editingMode} />
