@@ -1,9 +1,23 @@
 import { useContext, useEffect, useState } from "react"
 import { ModalContext } from "../../state/ModalContext"
-import { Button, Form, Modal, ModalContent, Segment, Table, TableBody, TableCell, TableHeader, TableHeaderCell, TableRow, TextArea } from "semantic-ui-react"
-import { characterStats } from "../../types/types"
+import { Button, Form, FormDropdown, FormTextArea, Modal, ModalContent, Segment, Table, TableBody, TableCell, TableHeader, TableHeaderCell, TableRow } from "semantic-ui-react"
+import { appState, characterStats } from "../../types/types"
 import { useDispatch } from "react-redux"
-import { loadCharacter } from "../../state/CharacterContext"
+import { loadData } from "../../state/CharacterContext"
+
+
+const dataTypes: Array<{key: string, text: string, value: keyof appState}> = [
+    {
+        key: 'character',
+        text: 'Character',
+        value: 'characterStats'
+    },
+    {
+        key: 'customElements',
+        text: 'Custom Elements',
+        value: 'customElements'
+    }
+]
 
 const LoadModal = () => {
     const {loadModalState, setLoadModalState} = useContext(ModalContext)
@@ -12,6 +26,7 @@ const LoadModal = () => {
     const [uploading, setUploading] = useState<boolean>(false)
     const [uploadedJSON, setUploadedJSON] = useState<string>('')
     const [failedUpload, setFailedUpload] = useState<boolean>(false)
+    const [dataType, setDataType] = useState<keyof appState>('characterStats')
 
     const dispatch = useDispatch()
 
@@ -56,9 +71,10 @@ const LoadModal = () => {
         if (uploading && uploadedJSON) {
             try {
                 const content = JSON.parse(uploadedJSON)
-                dispatch(loadCharacter({newValue: content}))
+                dispatch(loadData({newValue: content, type: dataType}))
                 setUploading(false)
                 setFailedUpload(false)
+                setLoadModalState({open: false})
             } catch (error) {
                 console.log(error)
                 setFailedUpload(true)
@@ -78,14 +94,17 @@ const LoadModal = () => {
         const selectedCharacter = characters.filter(x => x.meta.id === id)
 
         if (selectedCharacter.length === 1) {
-            dispatch(loadCharacter({newValue: selectedCharacter[0]}))
+            dispatch(loadData({newValue: selectedCharacter[0], type: 'characterStats'}))
         }
         setSelected({})
         setLoadModalState({open: false})
     }
 
     const content = uploading? (
-        <TextArea rows={29} placeholder='Paste JSON here...' style={{width: '430px', resize: 'none', borderWidth: '1px', borderColor: failedUpload? 'red': 'black'}} onChange={(_, {value}) => setUploadedJSON(String(value))}/>
+        <Form>
+            <FormDropdown selection label='Data Type' options={dataTypes} defaultValue='characterStats'  onChange={(_, {value}) => setDataType(value as keyof appState)} />
+            <FormTextArea rows={21} placeholder='Paste JSON here...' style={{width: '430px', resize: 'none', borderWidth: '1px', borderColor: failedUpload? 'red': 'black'}} onChange={(_, {value}) => setUploadedJSON(String(value))}/>
+        </Form>
         ):(
         <Table singleLine selectable basic='very'>
             <TableHeader>

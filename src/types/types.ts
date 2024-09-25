@@ -4,6 +4,7 @@ export type rollModalState = {
     target: number
     crit: boolean
     success: boolean
+    text?: string
 }
 
 export type storyModalState = {
@@ -17,6 +18,10 @@ export type loadModalState = {
 }
 
 export type customModalState = {
+    open: boolean
+}
+
+export type optionsModalState = {
     open: boolean
 }
 
@@ -117,9 +122,15 @@ export type customElements = {
     magic: {[key: string]: spellDescription}
 }
 
+export type options = {
+    disableGrowthCost: boolean
+    discordWebHook: string
+}
+
 export type appState = {
     characterStats: characterStats
     customElements: customElements
+    options: options
 } 
 
 export type basicDescription = {

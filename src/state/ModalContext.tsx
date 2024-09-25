@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { customModalState, loadModalState, rollModalState, storyModalState } from "../types/types";
+import { customModalState, loadModalState, optionsModalState, rollModalState, storyModalState } from "../types/types";
 
 
 type ModalContext = {
@@ -11,6 +11,8 @@ type ModalContext = {
     setLoadModalState: (newState: loadModalState) => void
     customModalState: customModalState
     setCustomModalState: (newState: customModalState) => void
+    optionsModalState: optionsModalState
+    setOptionsModalState: (newState: optionsModalState) => void
 }
 
 export const ModalContext = React.createContext<ModalContext>({} as ModalContext);
@@ -21,6 +23,7 @@ export const ModalProvider = ({children} : {children: React.ReactNode}) => {
     const [storyModalState, setStoryModalState] = useState({open: false} as storyModalState)
     const [loadModalState, setLoadModalState] = useState({open: false} as loadModalState)
     const [customModalState, setCustomModalState] = useState({open: false} as customModalState)
+    const [optionsModalState, setOptionsModalState] = useState({open: false} as optionsModalState)
 
     return (
         <ModalContext.Provider value={{
@@ -31,7 +34,10 @@ export const ModalProvider = ({children} : {children: React.ReactNode}) => {
             loadModalState: loadModalState, 
             setLoadModalState: setLoadModalState, 
             customModalState: customModalState, 
-            setCustomModalState: setCustomModalState}}>
+            setCustomModalState: setCustomModalState,
+            optionsModalState: optionsModalState,
+            setOptionsModalState: setOptionsModalState
+            }}>
             {children}
         </ModalContext.Provider>
     )

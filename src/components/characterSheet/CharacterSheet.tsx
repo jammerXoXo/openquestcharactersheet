@@ -16,10 +16,11 @@ import Overview from "../views/Overview"
 import InventoryView from "../views/InventoryView"
 import NotesView from "../views/NotesView"
 import CustomModal from "../modals/CustomModal"
+import OptionsModal from "../modals/OptionsModal"
 
 const CharacterSheet = () => {
     const {editingMode, setEditingMode, activeSheet, setActiveSheet} = useContext(SheetContext)
-    const {setLoadModalState, setCustomModalState} = useContext(ModalContext)
+    const {setLoadModalState, setCustomModalState, setOptionsModalState} = useContext(ModalContext)
     const dispatch = useDispatch()
     const store = useStore()
     const state = store.getState()
@@ -57,11 +58,13 @@ const CharacterSheet = () => {
             <StoryModal/>
             <LoadModal />
             <CustomModal/>
+            <OptionsModal/>
             <Container className="sheetcontainer" >
                 <Menu attached='top' >
                     <MenuItem position="right" className='menubutton' name='dice tray' disabled={true}/>
                     <MenuItem className='menubutton' name='edit' onClick={() => setEditingMode(!editingMode)} active={editingMode} />
                     <MenuItem className='menubutton' name='Add skill/spell/item' onClick={() => setCustomModalState({open: true})}/>
+                    <MenuItem className='menubutton' name='Options' onClick={() => setOptionsModalState({open: true})}/>
                     <MenuItem className='menubutton' name={newChar? 'are you sure':'clear sheet'} onClick={() => dispatchNewCharacter()} />
                     <MenuItem className='menubutton' name='load' onClick={() => setLoadModalState({open: true})} />
                     {/* @ts-expect-error  TODO fix this later :P */}

@@ -23,7 +23,7 @@ const Skill = ({target, displayText, type}: SkillProps) => {
                 <div>{displayText}</div>
                 {editingMode?
                 <Editor type={type} targetSkill={target}/>:
-                <Roller value={skill.current} />
+                <Roller value={skill.current} text={displayText}/>
                 }
             </div>
         )

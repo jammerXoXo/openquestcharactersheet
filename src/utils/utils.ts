@@ -7,7 +7,7 @@ const getRandomNumber = (max: number) => {
 }
 
 
-export const getRollModalContent = (target: number, mod: number) => {
+export const getRollModalContent = (target: number, mod: number, text: string) => {
     const first = getRandomNumber(10)
     const second = getRandomNumber(10)
     const total = first * 10 + second
@@ -24,7 +24,8 @@ export const getRollModalContent = (target: number, mod: number) => {
         result: total,
         target: test,
         crit: crit,
-        success: success
+        success: success,
+        text: text
     }
 }
 

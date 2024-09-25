@@ -376,6 +376,10 @@ export const getDefaultCharacter = (uuid:string): appState => {
         customElements: {
             items: {},
             magic: {},
+        },
+        options: {
+            disableGrowthCost: false,
+            discordWebHook: ''
         }
     })
 }

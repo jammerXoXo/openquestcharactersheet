@@ -4,7 +4,7 @@ import { v4 as uuid} from 'uuid'
 import { createSlice, configureStore} from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { applyForumlas, calculateCurrent, getBaseSpellGrowthCosts, getSkillGrowthCost, getSpellCost } from '../utils/utils'
-import { appState, attributesKeys, characteristicsKeys, characterStats, countersKeys, formulaDescription, item, learnedSpell, motivesKeys, skillsKeys, spellDescription, story, trackedInfoKeys } from '../types/types'
+import { appState, attributesKeys, characteristicsKeys, characterStats, countersKeys, customElements, formulaDescription, item, learnedSpell, motivesKeys, options, skillsKeys, spellDescription, story, trackedInfoKeys } from '../types/types'
 import { spellDescriptions } from '../constants/magic'
 import { itemDescriptions } from '../constants/items'
 import { getDefaultCharacter } from '../constants/DefaultState'
@@ -27,17 +27,25 @@ const getLastCharacter = () => {
     if (customElements.length > 0) {
         ret.customElements = JSON.parse(customElements)
     }
+    const options:string = localStorage.getItem('options') ?? ''
+    if (options.length > 0) {
+        ret.options = JSON.parse(options)
+    }
 
     return ret
 }
 
-const addGrowthPoints = (stats: characterStats, growthPoints: number) => {
-    if (stats.attributes.growth.current + growthPoints < 0) {
+const addGrowthPoints = (state: appState, growthPoints: number) => {
+    if (state.options.disableGrowthCost) {
+        return true
+    }
+
+    if (state.characterStats.attributes.growth.current + growthPoints < 0) {
         return false
     }
 
-    stats.attributes.growth.point_mod += growthPoints
-    stats.attributes.growth.current = calculateCurrent(stats.attributes.growth)
+    state.characterStats.attributes.growth.point_mod += growthPoints
+    state.characterStats.attributes.growth.current = calculateCurrent(state.characterStats.attributes.growth)
 
     return true
 }
@@ -55,7 +63,7 @@ const statsSlice = createSlice({
                 return
             }
             
-            if (!addGrowthPoints(state.characterStats, -5 * increment)) {
+            if (!addGrowthPoints(state, -5 * increment)) {
                 return
             }
 
@@ -73,7 +81,7 @@ const statsSlice = createSlice({
                 return
             }
 
-            if (!addGrowthPoints(state.characterStats, -1 * getSkillGrowthCost(state.characterStats.skills[target].current, increment))) {
+            if (!addGrowthPoints(state, -1 * getSkillGrowthCost(state.characterStats.skills[target].current, increment))) {
                 return
             }
 
@@ -109,23 +117,28 @@ const statsSlice = createSlice({
             state.characterStats.attributes[action.payload.target].current = calculateCurrent(state.characterStats.attributes[action.payload.target])
             state.characterStats.meta.edited = (new Date()).toLocaleString()
         },
-        loadCharacter: (state: appState, action: PayloadAction<{newValue: characterStats}>) => {
-            const loadChar = action.payload.newValue
-            applyForumlas(loadChar)
+        loadData: (state: appState, action: PayloadAction<{newValue: characterStats | customElements | options, type: keyof appState}>) => {
+            if (action.payload.type === 'characterStats') {
+                const loadChar = action.payload.newValue as characterStats
+                applyForumlas(loadChar)
 
-            localStorage.setItem(`options/lastsaved`, loadChar?.meta?.id)
-            loadChar.meta.edited = (new Date()).toLocaleString()
+                localStorage.setItem(`options/lastsaved`, loadChar?.meta?.id)
+                loadChar.meta.edited = (new Date()).toLocaleString()
 
-            state.characterStats.info = loadChar.info
-            state.characterStats.characteristics = loadChar.characteristics
-            state.characterStats.attributes = loadChar.attributes
-            state.characterStats.counters = loadChar.counters
-            state.characterStats.inventory = loadChar.inventory
-            state.characterStats.magic = loadChar.magic
-            state.characterStats.motives = loadChar.motives
-            state.characterStats.skills = loadChar.skills
-            state.characterStats.meta = loadChar.meta
-            state.characterStats.notes = loadChar.notes
+                state.characterStats.info = loadChar.info
+                state.characterStats.characteristics = loadChar.characteristics
+                state.characterStats.attributes = loadChar.attributes
+                state.characterStats.counters = loadChar.counters
+                state.characterStats.inventory = loadChar.inventory
+                state.characterStats.magic = loadChar.magic
+                state.characterStats.motives = loadChar.motives
+                state.characterStats.skills = loadChar.skills
+                state.characterStats.meta = loadChar.meta
+                state.characterStats.notes = loadChar.notes
+            } else if (action.payload.type === 'customElements') {
+                const customElements = action.payload.newValue as customElements
+                state.customElements = customElements
+            }
         },
         newCharacter: (state: appState) => {
             const newChar = structuredClone(getDefaultCharacter(String(uuid())))
@@ -149,12 +162,12 @@ const statsSlice = createSlice({
             }, {pass: [] as learnedSpell[], cost: 0})
             // state.characterStats.magic = state.characterStats.magic.filter(spell => action.payload.spellNames.indexOf(spell.name) === -1)
             state.characterStats.magic = result.pass
-            addGrowthPoints(state.characterStats, result.cost)     
+            addGrowthPoints(state, result.cost)     
         },
         addSpells: (state: appState, action: PayloadAction<{spellNames: string[]}>) => {
             const cost = getBaseSpellGrowthCosts(state.customElements, action.payload.spellNames)
 
-            if (addGrowthPoints(state.characterStats, -cost)) {
+            if (addGrowthPoints(state, -cost)) {
                 action.payload.spellNames.forEach((spellName: string) => state.characterStats.magic.push({
                     name: spellDescriptions[spellName]?.name ?? state.customElements.magic[spellName].name,
                     magnitude: spellDescriptions[spellName]?.magnitude ?? state.customElements.magic[spellName].magnitude,
@@ -172,7 +185,7 @@ const statsSlice = createSlice({
                     if (x.name === action.payload.name) {
                         if (action.payload.learnedMagnitude) {
                             const costDiff = (x.type === 'sorcery'? 3: (action.payload.learnedMagnitude - x.learnedMagnitude) * (x.type === 'divine'? 2: 1))
-                            if (!addGrowthPoints(state.characterStats, -costDiff)) {
+                            if (!addGrowthPoints(state, -costDiff)) {
                                 return x
                             }
                         }
@@ -294,6 +307,9 @@ const statsSlice = createSlice({
                 }
                 delete state.customElements.magic[value]
             } 
+        },
+        updateOptions: (state: appState, action: PayloadAction<{newOptions: Partial<options>}>) => {
+            state.options = {...state.options, ...action.payload.newOptions}
         }
     },
     selectors: {
@@ -307,7 +323,8 @@ const statsSlice = createSlice({
         selectInventory: (state: appState) => state.characterStats.inventory,
         selectNotes: (state: appState) => state.characterStats.notes,
         selectCustomSkills: (state: appState) => state.characterStats.customSkills,
-        selectCustomElements: (state: appState) => state.customElements
+        selectCustomElements: (state: appState) => state.customElements,
+        selectOptions: (state: appState) => state.options
     }
 })
 
@@ -325,6 +342,7 @@ store.subscribe(() => {
             localStorage.setItem(`characters/${state.characterStats.meta.id}`, JSON.stringify(state.characterStats))
             localStorage.setItem(`options/lastsaved`, state.characterStats.meta.id)
             localStorage.setItem('customElements', JSON.stringify(state.customElements))
+            localStorage.setItem('options', JSON.stringify(state.options))
             timer = null
         }, 5000)
     }
@@ -335,6 +353,6 @@ store.subscribe(() => {
 const { actions, selectors, reducer } = statsSlice
 
 export const { dispatch } = store
-export const { updateCharacteristic, updateSkill, updateStory, deleteStory, updateDetail, applyDamage, updateCounter, updateAttribute, loadCharacter, newCharacter, deleteSpells, addSpells, updateSpell, deleteItems, addItems, updateItem, updateNotes, addCustomItem, addCustomSkill, addCustomSpell, deleteCustomElement } = actions
-export const { selectAttribute, selectCharacteristic, selectSkill, selectMotive, selectInfo, selectCounter, selectMagic, selectInventory, selectNotes, selectCustomElements, selectCustomSkills } = selectors
+export const { updateCharacteristic, updateSkill, updateStory, deleteStory, updateDetail, applyDamage, updateCounter, updateAttribute, loadData, newCharacter, deleteSpells, addSpells, updateSpell, deleteItems, addItems, updateItem, updateNotes, addCustomItem, addCustomSkill, addCustomSpell, deleteCustomElement, updateOptions } = actions
+export const { selectAttribute, selectCharacteristic, selectSkill, selectMotive, selectInfo, selectCounter, selectMagic, selectInventory, selectNotes, selectCustomElements, selectCustomSkills, selectOptions } = selectors
 export default reducer

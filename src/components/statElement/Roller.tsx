@@ -15,9 +15,10 @@ const dieAudioFail = new Audio(diefail)
 type RollerProps = {
     disabled?: boolean
     value: number
+    text?: string
 }
 
-const Roller = ({disabled, value}: RollerProps) => {
+const Roller = ({disabled, value, text}: RollerProps) => {
     const [advancedMode, setAdvancedMode] = useState(false)
     const [mod, setMod] = useState(0)
     const {setRollModalState} = useContext(ModalContext)
@@ -41,7 +42,7 @@ const Roller = ({disabled, value}: RollerProps) => {
         if (disabled) {
             return
         }
-        const modalState = getRollModalContent(value, mod)
+        const modalState = getRollModalContent(value, mod, text ?? '')
 
         if (modalState.crit && !modalState.success) {
             dieAudioFail.play()
