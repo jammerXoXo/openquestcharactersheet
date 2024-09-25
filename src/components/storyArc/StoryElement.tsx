@@ -6,7 +6,7 @@ import { ModalContext } from "../../state/ModalContext"
 import { SheetContext } from "../../state/SheetContext"
 import { useDispatch, useSelector } from "react-redux"
 import { selectMotive, updateStory } from "../../state/CharacterContext"
-import { characterStats, motivesKeys } from "../../types/types"
+import { appState, motivesKeys } from "../../types/types"
 
 type StoryElementProps = {
     type: motivesKeys

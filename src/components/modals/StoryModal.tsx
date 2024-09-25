@@ -3,7 +3,7 @@ import { ModalContext } from "../../state/ModalContext"
 import { Button, Form, Input, Modal, ModalContent, TextArea } from "semantic-ui-react"
 import { useDispatch, useSelector } from "react-redux"
 import { deleteStory, selectMotive, updateStory } from "../../state/CharacterContext"
-import { characterStats, story, storyModalState } from "../../types/types"
+import { appState, story, storyModalState } from "../../types/types"
 
 const StoryModal = () => {
     const {storyModalState, setStoryModalState} = useContext(ModalContext)

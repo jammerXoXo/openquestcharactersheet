@@ -1,6 +1,6 @@
 import { useContext } from "react"
 import { Button } from "semantic-ui-react"
-import { basicDescription, characteristicsKeys, characterStats, characterStatsKeys } from "../../types/types"
+import { appState, basicDescription, characteristicsKeys, characterStatsKeys } from "../../types/types"
 import { useSelector } from "react-redux"
 import { selectCharacteristic } from "../../state/CharacterContext"
 import { SheetContext } from "../../state/SheetContext"

@@ -1,6 +1,6 @@
 import { useContext } from "react"
 import { ModalContext } from "../../state/ModalContext"
-import { characterStats, motivesKeys } from "../../types/types"
+import { appState, motivesKeys } from "../../types/types"
 import { useSelector } from "react-redux"
 import { selectMotive } from "../../state/CharacterContext"
 
