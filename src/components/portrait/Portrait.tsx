@@ -3,11 +3,11 @@ import { Image, Input, Popup } from "semantic-ui-react"
 import { SheetContext } from "../../state/SheetContext"
 import { selectInfo, updateDetail } from "../../state/CharacterContext"
 import { useDispatch, useSelector } from "react-redux"
-import { characterStats } from "../../types/types"
+import { appState } from "../../types/types"
 
 
 const Portrait = () => {
-    const info = useSelector((state: { stats: characterStats }) => selectInfo(state))
+    const info = useSelector((state: { state: appState }) => selectInfo(state))
     const dispatch = useDispatch()
     const {editingMode} = useContext(SheetContext)
     const [imageUrl, setImageUrl] = useState('')

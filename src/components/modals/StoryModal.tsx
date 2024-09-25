@@ -9,7 +9,7 @@ const StoryModal = () => {
     const {storyModalState, setStoryModalState} = useContext(ModalContext)
     const dispatch = useDispatch()
     const [deleting, setDeleting] = useState(false)
-    const motives = useSelector((state: { stats: characterStats }) => selectMotive(state, storyModalState.type))
+    const motives = useSelector((state: { state: appState }) => selectMotive(state, storyModalState.type))
 
     const dispatchUpdateStory = (newValue: Partial<story>) => {
         if (storyModalState?.open) {

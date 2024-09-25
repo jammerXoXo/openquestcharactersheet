@@ -15,7 +15,7 @@ type CharacteristicProps = {
 
 const Characteristic = ({target, display, type}: CharacteristicProps) => {
 
-    const characteristic = useSelector((state: { stats: characterStats }) => selectCharacteristic(state, target))
+    const characteristic = useSelector((state: { state: appState }) => selectCharacteristic(state, target))
     const {editingMode} = useContext(SheetContext)
 
 

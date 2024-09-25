@@ -1,4 +1,4 @@
-import { useContext } from "react"
+import { useContext, useState } from "react"
 import {Container, Grid, Menu, MenuItem, Segment} from "semantic-ui-react"
 
 import "./CharacterSheet.css"
@@ -15,13 +15,28 @@ import { saveFile } from "../../utils/utils"
 import Overview from "../views/Overview"
 import InventoryView from "../views/InventoryView"
 import NotesView from "../views/NotesView"
+import CustomModal from "../modals/CustomModal"
 
 const CharacterSheet = () => {
     const {editingMode, setEditingMode, activeSheet, setActiveSheet} = useContext(SheetContext)
-    const {setLoadModalState} = useContext(ModalContext)
+    const {setLoadModalState, setCustomModalState} = useContext(ModalContext)
     const dispatch = useDispatch()
     const store = useStore()
     const state = store.getState()
+
+    const [newChar, setNewChar] = useState(false)
+
+    const dispatchNewCharacter = () => {
+        if (newChar) {
+            dispatch(newCharacter())
+            setNewChar(false)
+        } else {
+            setNewChar(true)
+            setTimeout(() => {
+                setNewChar(false)
+            }, 10*1000)
+        }
+    }
 
     const getView = () => {
         if (activeSheet === 'stats') {
@@ -41,11 +56,13 @@ const CharacterSheet = () => {
             <RollModal/>
             <StoryModal/>
             <LoadModal />
+            <CustomModal/>
             <Container className="sheetcontainer" >
                 <Menu attached='top' >
                     <MenuItem position="right" className='menubutton' name='dice tray' disabled={true}/>
                     <MenuItem className='menubutton' name='edit' onClick={() => setEditingMode(!editingMode)} active={editingMode} />
-                    <MenuItem className='menubutton' name='new' onClick={() => dispatch(newCharacter())} />
+                    <MenuItem className='menubutton' name={newChar? 'are you sure':'clear sheet'} onClick={() => dispatchNewCharacter()} />
+                    <MenuItem className='menubutton' name='Add skill/spell/item' onClick={() => setCustomModalState({open: true})}/>
                     <MenuItem className='menubutton' name='load' onClick={() => setLoadModalState({open: true})} />
                     {/* @ts-expect-error  TODO fix this later :P */}
                     <MenuItem className='menubutton' name='download' onClick={() => saveFile(state)} />

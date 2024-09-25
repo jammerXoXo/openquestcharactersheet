@@ -1,6 +1,6 @@
 import { useContext } from "react"
 import Roller from "../statElement/Roller"
-import { characterStats, characterStatsKeys, formulaDescription, skillsKeys } from "../../types/types"
+import { appState, characterStatsKeys, skillsKeys } from "../../types/types"
 import { useSelector } from "react-redux"
 import { selectSkill } from "../../state/CharacterContext"
 import { SheetContext } from "../../state/SheetContext"
@@ -8,25 +8,28 @@ import Editor from "../statElement/Editor"
 
 type SkillProps = {
     target: skillsKeys
-    display: formulaDescription
+    displayText: string
     type: characterStatsKeys
 }
 
-const Skill = ({target, display, type}: SkillProps) => {
+const Skill = ({target, displayText, type}: SkillProps) => {
 
-    const skill = useSelector((state: { stats: characterStats }) => selectSkill(state, target))
+    const skill = useSelector((state: { state: appState }) => selectSkill(state, target))
     const {editingMode} = useContext(SheetContext)
 
-
-    return (
-        <div className="characteristic">
-            <div>{display.display}</div>
-            {editingMode?
-            <Editor type={type} targetSkill={target}/>:
-            <Roller value={skill.current} />
-            }
-        </div>
-    )
+    if (skill) {
+        return (
+            <div className="characteristic">
+                <div>{displayText}</div>
+                {editingMode?
+                <Editor type={type} targetSkill={target}/>:
+                <Roller value={skill.current} />
+                }
+            </div>
+        )
+    } else {
+        return null
+    }
 }
 
 export default Skill

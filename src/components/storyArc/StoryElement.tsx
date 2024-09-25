@@ -17,7 +17,7 @@ const StoryElement = ({type}: StoryElementProps) => {
     const {setStoryModalState} = useContext(ModalContext)
     const {editingMode} = useContext(SheetContext)
     const dispatch = useDispatch()
-    const motives = useSelector((state: { stats: characterStats }) => selectMotive(state, type))
+    const motives = useSelector((state: { state: appState }) => selectMotive(state, type))
 
     const [showCompleted, setShowCompleted] = useState(false)
 

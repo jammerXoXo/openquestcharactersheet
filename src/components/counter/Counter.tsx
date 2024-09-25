@@ -1,6 +1,6 @@
 import { Input, Label, Popup, Segment } from "semantic-ui-react"
 import { useState } from "react"
-import { characterStats, countersKeys } from "../../types/types"
+import { appState, countersKeys } from "../../types/types"
 import { useDispatch, useSelector } from "react-redux"
 import { selectCounter, updateCounter } from "../../state/CharacterContext"
 
@@ -10,7 +10,7 @@ type CounterProps = {
 }
 
 const Counter = ({target, display}: CounterProps) => {
-    const counter = useSelector((state: { stats: characterStats }) => selectCounter(state, target))
+    const counter = useSelector((state: { state: appState }) => selectCounter(state, target))
     const dispatch = useDispatch()
     const [popupOpen, setPopopOpen] = useState(false)
     const [addition, setAddition] = useState('')

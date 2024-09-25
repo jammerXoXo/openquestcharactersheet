@@ -73,187 +73,194 @@ export const SKILLS: skillDescriptions = {
     resistance: {
         abbr: "resists",
         display: "Resistances",
-        skills: {
-            dodge: {
+        skills: [
+            {
+                skill: 'dodge',
                 abbr: "dodge",
                 display: "Dodge",
                 formula: "(DEX + 10)",
             },
-            persistance: {
+            {
+                skill: 'persistance',
                 abbr: "persist",
                 display: "Persistance",
                 formula: "(POW + 10)",
             },
-            resiliance: {
+            {
+                skill: 'resilience',
                 abbr: "resil",
                 display: "Resilience",
                 formula: "(CON + POW)",
             }
-        }
+        ]
     },
     combat: {
         abbr: "combat",
         display: "Combat Skills",
-        skills: {
-            close: {
+        skills: [
+            {
+                skill: 'close',
                 abbr: "close",
                 display: "Close Combat",
                 formula: "(DEX + STR)",
             },
-            ranged: {
+            {
+                skill: 'ranged',
                 abbr: "ranged",
                 display: "Ranged Combat",
                 formula: "(DEX + INT)",
             },
-            unarmed: {
+            {
+                skill: 'unarmed',
                 abbr: "unarmed",
                 display: "Unarmed Combat",
                 formula: "(DEX + STR)",
             }
-        }
+        ]
     },
     knowledge: {
         abbr: "knowl",
         display: "Knowledge",
-        skills: {
-            cultOwn: {
+        skills: [
+            {
+                skill: 'cultOwn',
                 abbr: "cult [own]",
                 display: "Culture [Own]",
                 formula: "(INT + 10)",
             },
-            langOwn: {
+            {
+                skill: 'langOwn',
                 abbr: "lang [own]",
                 display: "Language [Own]",
                 formula: "(INT + 50)",
             },
-            nature: {
+            {
+                skill: 'nature',
                 abbr: "nat. lore",
                 display: "Natural Lore",
                 formula: "(INT + 10)",
-            },
-            cultOther: {
-                abbr: "cult [other]",
-                display: "Culture [Other]",
-                formula: "(INT)",
-            },
-            langOther: {
-                abbr: "lang [other]",
-                display: "Language [Other]",
-                formula: "(INT)"
-            },
-            loreOther: {
-                abbr: "lore [other]",
-                display: "Lore [other]",
-                formula: "(INT)",
-            },
-        }
+            }
+        ]
     },
     magic: {
         abbr: "magic",
         display: "Magic",
-        skills: {
-            pers: {
+        skills: [
+            {
+                skill: 'pers',
                 abbr: "personal",
                 display: "Personal Magic",
                 formula: "(POW x 3)",
             },
-            sorc: {
+            {
+                skill: 'sorc',
                 abbr: "sorcery",
                 display: "Sorcery Casting",
                 formula: "(INT)",
             },
-            religOwn: {
+            {
+                skill: 'religOwn',
                 abbr: "relig [own]",
                 display: "Religion [Own]",
                 formula: "(INT + 10)",
-            },
-            religOther: {
-                abbr: "relig [other]",
-                display: "Religion [Other]",
-                formula: "(INT)"
             }
-        }
+        ]
     },
     practical: {
         abbr: "pract",
         display: "Practical",
-        skills: {
-            althletics: {
+        skills: [           
+            {
+                skill: 'athletics',
                 abbr: "athle",
                 display: "Athletics",
                 formula: "(DEX + STR)",
             },
-            craft: {
+            {
+                skill: 'craft',
                 abbr: "craft",
                 display: "Craft",
                 formula: "(INT + 10)",
             },
-            decep: {
+            {
+                skill: 'decep',
                 abbr: "decept",
                 display: "Deception",
                 formula: "(DEX + INT)",
             },
-            drive: {
+            {
+                skill: 'drive',
                 abbr: "drive",
                 display: "Driving",
                 formula: "(DEX + INT)",
             },
-            engin: {
+            {
+                skill: 'engin',
                 abbr: "engin",
                 display: "Engineering",
                 formula: "(INT + 10)",
             },
-            healing: {
+            {
+                skill: 'healing',
                 abbr: "heal",
                 display: "Healing",
                 formula: "(INT + 10)",
             },
-            influ: {
+            {
+                skill: 'influ',
                 abbr: "influ",
                 display: "Influence",
                 formula: "(CHA + 10)",
             },
-            mech: {
+            {
+                skill: 'mech',
                 abbr: "mecha",
                 display: "Mechanisms",
                 formula: "(DEX + INT)",
             },
-            percep: {
+            {
+                skill: 'percep',
                 abbr: "percep",
                 display: "Perception",
                 formula: "(INT + POW)",
             },
-            perf: {
+            {
+                skill: 'perf',
                 abbr: "perf",
                 display: "Performance",
                 formula: "(CHA + 10)",
             },
-            riding: {
+            {
+                skill: 'riding',
                 abbr: "ride",
                 display: "Riding",
                 formula: "(DEX + POW)",
             },
-            sail: {
+            {
+                skill: 'sail',
                 abbr: "sail",
                 display: "Sailing",
                 formula: "(DEX + INT)",
             },
-            street: {
+            {
+                skill: 'street',
                 abbr: "street",
                 display: "Streetwise",
                 formula: "(CHA + POW)",
             },
-            trade: {
+            {
+                skill: 'trade',
                 abbr: "trade",
                 display: "Trade",
                 formula: "(INT + 10)",
             },
-            wealth: {
+            {
+                skill: 'wealth',
                 abbr: "wealth",
                 display: "Wealth",
                 formula: "(INT + CHA)",
             },
-        }
+        ]
     }
 }
 
@@ -263,21 +270,17 @@ export type FORMULAKEYS = Exclude<(skillsKeys | attributesKeys | countersKeys), 
 export const FORMULAS : {[key in FORMULAKEYS]: (characteristics: characteristics) => number} = {
     dodge: (characteristics: characteristics) => (characteristics.dexterity.current + 10),
     persistance: (characteristics: characteristics) => (characteristics.power.current + 10),
-    resiliance: (characteristics: characteristics) => (characteristics.constitution.current + characteristics.power.current),
+    resilience: (characteristics: characteristics) => (characteristics.constitution.current + characteristics.power.current),
     close: (characteristics: characteristics) => (characteristics.dexterity.current + characteristics.strength.current),
     ranged: (characteristics: characteristics) => (characteristics.dexterity.current + characteristics.intelligence.current),
     unarmed: (characteristics: characteristics) => (characteristics.dexterity.current + characteristics.strength.current),
     cultOwn: (characteristics: characteristics) => (characteristics.intelligence.current + 10),
     langOwn: (characteristics: characteristics) => (characteristics.intelligence.current + 50),
     nature: (characteristics: characteristics) => (characteristics.intelligence.current + 10),
-    cultOther: (characteristics: characteristics) => (characteristics.intelligence.current),
-    langOther: (characteristics: characteristics) => (characteristics.intelligence.current),
-    loreOther: (characteristics: characteristics) => (characteristics.intelligence.current),
     pers: (characteristics: characteristics) => (characteristics.power.current * 3),
     sorc: (characteristics: characteristics) => (characteristics.intelligence.current),
     religOwn: (characteristics: characteristics) => (characteristics.intelligence.current + 10),
-    religOther: (characteristics: characteristics) => (characteristics.intelligence.current),
-    althletics: (characteristics: characteristics) => (characteristics.dexterity.current + characteristics.strength.current),
+    athletics: (characteristics: characteristics) => (characteristics.dexterity.current + characteristics.strength.current),
     craft: (characteristics: characteristics) => (characteristics.intelligence.current + 10),
     decep: (characteristics: characteristics) => (characteristics.dexterity.current + characteristics.intelligence.current),
     drive: (characteristics: characteristics) => (characteristics.dexterity.current + characteristics.intelligence.current),

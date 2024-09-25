@@ -29,7 +29,7 @@ const StatsView = () => {
                     <Portrait/>
                 </GridColumn>
             </GridRow>
-            <GridRow>
+            <GridRow style={{height: '374px'}}>
                 <GridColumn width={4}>
                     <SkillBlock type='combat'/>
                     <SkillBlock type='magic'/>

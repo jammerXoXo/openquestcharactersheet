@@ -16,6 +16,10 @@ export type loadModalState = {
     open: boolean
 }
 
+export type customModalState = {
+    open: boolean
+}
+
 export type trackedStat = {
     current: number
     base: number
@@ -68,11 +72,11 @@ export type motivesKeys = 'saga' | 'quest'
 export type motives = { [key in motivesKeys]: { [key: string]: story } }
 
 export type skillTypes = 'resistance' | 'combat' | 'knowledge' | 'magic' | 'practical'
-export type resistanceSkillsKeys = 'dodge' | 'persistance' | 'resiliance'
+export type resistanceSkillsKeys = 'dodge' | 'persistance' | 'resilience'
 export type combatSkillsKeys = 'close' | 'ranged' | 'unarmed'
-export type knowledgeSkillsKeys = 'cultOwn' | 'langOwn' | 'nature' | 'cultOther' | 'langOther' | 'loreOther'
-export type magicSkillsKeys = 'pers' | 'sorc' | 'religOwn' | 'religOther'
-export type practicalSkillsKeys = 'althletics' | 'craft' | 'decep' | 'drive' | 'engin' | 'healing' | 'influ' | 'mech' | 'percep' | 'perf' | 'riding' | 'sail' | 'street' | 'trade' |'wealth'
+export type knowledgeSkillsKeys = 'cultOwn' | 'langOwn' | 'nature' | `cult[${string}]` | `lang[${string}]` | `lore[${string}]`
+export type magicSkillsKeys = 'pers' | 'sorc' | 'religOwn' | `relig[${string}]`
+export type practicalSkillsKeys = 'athletics' | 'craft' | 'decep' | 'drive' | 'engin' | 'healing' | 'influ' | 'mech' | 'percep' | 'perf' | 'riding' | 'sail' | 'street' | 'trade' |'wealth'
 export type skillsKeys =  resistanceSkillsKeys | combatSkillsKeys | knowledgeSkillsKeys | magicSkillsKeys | practicalSkillsKeys
 export type skills = { [key in skillsKeys]: trackedStat }
 
@@ -104,14 +108,26 @@ export type characterStats = {
     magic: magic
     inventory: inventory
     notes: string
+    customSkills: Partial<skillDescriptions>
 }
+
+export type customElements = {
+    items: {[key: string]: item}
+    magic: {[key: string]: spellDescription}
+}
+
+export type appState = {
+    characterStats: characterStats
+    customElements: customElements
+} 
 
 export type basicDescription = {
     abbr: string
     display: string
 }
 
-export type formulaDescription = {
+export type formulaDescription<T> = {
+    skill: T
     abbr: string
     display: string
     formula: string
@@ -120,7 +136,7 @@ export type formulaDescription = {
 export type skillBlock<T extends string> = {
     abbr: string
     display: string
-    skills: { [key in T]: formulaDescription }
+    skills: Array<formulaDescription<T>>
 }
 
 export type characteristicsDescriptions = { [key in characteristicsKeys]: basicDescription }

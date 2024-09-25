@@ -1,7 +1,7 @@
 import { Input, Label, Popup, Segment } from "semantic-ui-react"
 import {applyDamage, selectAttribute, updateAttribute } from "../../state/CharacterContext"
 import {useDispatch, useSelector} from "react-redux"
-import { attributesKeys, basicDescription, characterStats } from "../../types/types"
+import { appState, attributesKeys, basicDescription } from "../../types/types"
 import { useState } from "react"
 
 
@@ -11,7 +11,7 @@ type AttributeProps = {
 }
 
 const Attribute = ({target, display}: AttributeProps) => {
-    const attribute = useSelector((state: { stats: characterStats }) => selectAttribute(state, target))
+    const attribute = useSelector((state: { state: appState }) => selectAttribute(state, target))
     const dispatch = useDispatch()
     const [valid, setValid] = useState(true)
     const [addition, setAddition] = useState('')

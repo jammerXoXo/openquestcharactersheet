@@ -1,8 +1,8 @@
-import { useContext, useEffect, useState } from "react"
+import { useContext, useEffect, useMemo, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { Button, Container, Form, GridColumn, GridRow, Input, Label, Popup, Segment, Table, TableBody, TableCell, TableHeader, TableHeaderCell, TableRow } from "semantic-ui-react"
-import { characterStats, learnedSpell, spellDescription } from "../../types/types"
-import { addSpells, deleteSpells, selectMagic, updateSpell } from "../../state/CharacterContext"
+import { appState, baseSpell, learnedSpell, spellDescription } from "../../types/types"
+import { addSpells, deleteSpells, selectCustomElements, selectMagic, updateSpell } from "../../state/CharacterContext"
 import _ from "lodash"
 import { spellDescriptions } from "../../constants/magic"
 import { getBaseSpellGrowthCosts } from "../../utils/utils"
@@ -28,11 +28,17 @@ const MagicView = () => {
     const [newMagnitude, setNewMagnitude] = useState<number>(0)
     const [valid, setValid] = useState<boolean>(true)
     const [popupOpen, setPopopOpen] = useState(false)
+    const [searchTerm, setSearchTerm] = useState('')
 
     const {editingMode} = useContext(SheetContext)
 
-    const knownMagic = useSelector((state: { stats: characterStats }) => selectMagic(state))
-    const allMagic = spellDescriptions
+    const knownMagic = useSelector((state: { state: appState }) => selectMagic(state))
+    const customElements = useSelector((state: { state: appState }) => selectCustomElements(state))
+
+    const allMagic = useMemo( () => {
+        return { ...spellDescriptions, ...customElements.magic}
+    }, [customElements])
+
     const dispatch = useDispatch()
 
     const re = /-?\d+/
@@ -76,8 +82,15 @@ const MagicView = () => {
         }
     }
 
+    const searchMagic = (magic: baseSpell) => {
+        if ((searchTerm?.length ?? 0) === 0) {
+            return true
+        }
+        return (magic.name.toLowerCase().includes(searchTerm) || magic.tags.toLowerCase().includes(searchTerm) || magic.type.toLowerCase().includes(searchTerm))
+    }
+
     const getKnownSpellTableData = () => {
-        let data = _.sortBy(knownMagic, sortColumn)
+        let data = _.sortBy(knownMagic.filter(x => searchMagic(x)), sortColumn)
         if (sortDirection === 'descending') {
             data = data.reverse()
         }
@@ -98,7 +111,7 @@ const MagicView = () => {
     }
 
     const getAllSpellTableData = () => {
-        let data = _.sortBy(Object.values(allMagic).filter((x) => knownMagic.reduce((acc, spell) => acc && x.name !== spell.name, true)), sortColumn)
+        let data = _.sortBy(Object.values(allMagic).filter((x) => knownMagic.reduce((acc, spell) => acc && x.name !== spell.name, true)).filter(x => searchMagic(x)), sortColumn)
         if (sortDirection === 'descending') {
             data = data.reverse()
         }
@@ -114,7 +127,7 @@ const MagicView = () => {
     const getButtons = () => {
         return (addingSpell?
         <div style={{display: 'flex', justifyContent: 'space-between', height: '35px', marginTop: '5px'}}>
-            <Button icon='plus' disabled={Object.keys(selected).length < 1} label={{as: 'a', basic: true, content: `Add ${Object.keys(selected).length} spells for ${getBaseSpellGrowthCosts(Object.keys(selected))} growth points`}} onClick={() => dispatchAddSpells()}/>
+            <Button icon='plus' disabled={Object.keys(selected).length < 1} label={{as: 'a', basic: true, content: `Add ${Object.keys(selected).length} spells for ${getBaseSpellGrowthCosts(customElements, Object.keys(selected))} growth points`}} onClick={() => dispatchAddSpells()}/>
             <Button icon='x' label={{as: 'a', basic: true, content: 'Back'}} onClick={() => setAddingSpell(false)}/>
         </div>:
         <div style={{display: 'flex', justifyContent: 'space-between', height: '35px', marginTop: '5px'}}>
@@ -145,7 +158,7 @@ const MagicView = () => {
     }
 
     const getLastSelected = () => {
-        return Object.keys(selected).length > 0? spellDescriptions[Object.keys(selected)[Object.keys(selected).length - 1]]: null
+        return Object.keys(selected).length > 0? allMagic[Object.keys(selected)[Object.keys(selected).length - 1]]: null
     }
 
     return (
@@ -155,6 +168,7 @@ const MagicView = () => {
                     <Segment style={{display: 'flex', flex: '1 1', justifyContent: 'center', flexDirection: 'column'}}>
                         <Label attached='top'>{addingSpell? 'All Spells': 'Known Spells'}</Label>
                         <Container style={{height: '467px', overflow: 'auto'}} >
+                            <Input fluid icon='search' size='mini'  onChange={(_, {value}) => setSearchTerm(value?.toLowerCase())}/>
                             <Table>
                                 <TableHeader>
                                     <TableHeaderCell

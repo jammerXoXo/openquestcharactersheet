@@ -1,5 +1,5 @@
 import { Form, Input, Label, TextArea } from "semantic-ui-react"
-import { characterStats, trackedInfoKeys } from "../../types/types"
+import { appState, trackedInfoKeys } from "../../types/types"
 import { useDispatch, useSelector } from "react-redux"
 import { selectInfo, updateDetail } from "../../state/CharacterContext"
 
@@ -10,7 +10,7 @@ type PersonalDetailProps = {
 
 const PersonalDetail = ({type}: PersonalDetailProps) => {
 
-    const info = useSelector((state: { stats: characterStats }) => selectInfo(state))
+    const info = useSelector((state: { state: appState }) => selectInfo(state))
     const dispatch = useDispatch()
 
     return (
@@ -29,7 +29,7 @@ const PersonalDetail = ({type}: PersonalDetailProps) => {
 
 const PersonalDetails = () => {
 
-    const info = useSelector((state: { stats: characterStats }) => selectInfo(state))
+    const info = useSelector((state: { state: appState }) => selectInfo(state))
     const dispatch = useDispatch()
 
     return (

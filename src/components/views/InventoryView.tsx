@@ -1,8 +1,8 @@
-import { useContext, useEffect, useState } from "react"
+import { useContext, useEffect, useMemo, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { Button, Container, Form, GridColumn, GridRow, Label, Segment, Table, TableBody, TableCell, TableHeader, TableHeaderCell, TableRow } from "semantic-ui-react"
-import { characterStats, item } from "../../types/types"
-import { addItems,  deleteItems, selectInventory} from "../../state/CharacterContext"
+import { Button, Container, Form, GridColumn, GridRow, Input, Label, Segment, Table, TableBody, TableCell, TableHeader, TableHeaderCell, TableRow } from "semantic-ui-react"
+import { appState, item } from "../../types/types"
+import { addItems,  deleteItems, selectCustomElements, selectInventory} from "../../state/CharacterContext"
 import _ from "lodash"
 import { SheetContext } from "../../state/SheetContext"
 import { itemDescriptions } from "../../constants/items"
@@ -15,11 +15,17 @@ const InventoryView = () => {
     const [selected, setSelected] = useState<{[key: string]: number}>({} as {[key: string]: number})
     const [deleting, setDeleting] = useState<boolean>(false)
     const [addingItem, setAddingItem] = useState<boolean>(false)
+    const [searchTerm, setSearchTerm] = useState('')
 
     const {editingMode} = useContext(SheetContext)
 
-    const inventory = useSelector((state: { stats: characterStats }) => selectInventory(state))
-    const allItems = itemDescriptions
+    const inventory = useSelector((state: { state: appState }) => selectInventory(state))
+    const customElements = useSelector((state: { state: appState }) => selectCustomElements(state))
+
+    const allItems = useMemo( () => {
+        return { ...itemDescriptions, ...customElements.items }
+    }, [customElements])
+
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -46,8 +52,15 @@ const InventoryView = () => {
         setSortDirection(sortDirection === "descending" || sortDirection === undefined ? "ascending" : "descending")
     }
 
+    const searchItems = (item: item) => {
+        if ((searchTerm?.length ?? 0) === 0) {
+            return true
+        }
+        return (item.name.toLowerCase().includes(searchTerm) || item.tags.toLowerCase().includes(searchTerm) || item.type.toLowerCase().includes(searchTerm))
+    }
+
     const getTableData = (itemList: item[]) => {
-        let data = _.sortBy(itemList, sortColumn)
+        let data = _.sortBy(itemList.filter(x => searchItems(x)), sortColumn)
         if (sortDirection === 'descending') {
             data = data.reverse()
         }
@@ -92,7 +105,7 @@ const InventoryView = () => {
 
 
     const getLastSelected = () => {
-        return Object.keys(selected).length > 0? itemDescriptions[Object.keys(selected)[Object.keys(selected).length - 1]]: null
+        return Object.keys(selected).length > 0? allItems[Object.keys(selected)[Object.keys(selected).length - 1]]: null
     }
 
     return (
@@ -102,6 +115,7 @@ const InventoryView = () => {
                     <Segment style={{display: 'flex', flex: '1 1', justifyContent: 'center', flexDirection: 'column'}}>
                         <Label attached='top'>{addingItem? 'All Items': 'Inventory'}</Label>
                         <Container style={{height: '467px', overflow: 'auto'}} >
+                            <Input fluid icon='search' size='mini'  onChange={(_, {value}) => setSearchTerm(value?.toLowerCase())}/>
                             <Table>
                                 <TableHeader>
                                     <TableHeaderCell

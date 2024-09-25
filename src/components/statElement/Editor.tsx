@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { Button, Input, Popup } from "semantic-ui-react"
-import { characteristicsKeys, characterStats, characterStatsKeys, skillsKeys } from "../../types/types"
+import { characteristicsKeys, appState, characterStatsKeys, skillsKeys } from "../../types/types"
 import { useDispatch, useSelector } from "react-redux"
 import { selectCharacteristic, selectSkill, updateCharacteristic, updateSkill } from "../../state/CharacterContext"
 import { getGrowthCost } from "../../utils/utils"
@@ -14,8 +14,8 @@ type EditorProps = {
 
 const Editor = ({type, targetSkill = 'dodge', targetCharacteristic = 'strength'}: EditorProps) => {
  
-    const skill =  useSelector((state: { stats: characterStats }) => selectSkill(state, targetSkill))
-    const characteristic = useSelector((state: { stats: characterStats }) => selectCharacteristic(state, targetCharacteristic))
+    const skill =  useSelector((state: { state: appState }) => selectSkill(state, targetSkill))
+    const characteristic = useSelector((state: { state: appState }) => selectCharacteristic(state, targetCharacteristic))
 
     const stat = type === 'skills'? skill : characteristic
 

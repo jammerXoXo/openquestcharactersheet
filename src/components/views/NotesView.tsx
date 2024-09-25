@@ -1,11 +1,11 @@
 import { useDispatch, useSelector } from "react-redux"
 import { GridColumn, GridRow, Segment, TextArea } from "semantic-ui-react"
 import { selectNotes, updateNotes } from "../../state/CharacterContext"
-import { characterStats } from "../../types/types"
+import { appState } from "../../types/types"
 
 
 const NotesView = () => {
-    const notes = useSelector((state: { stats: characterStats }) => selectNotes(state))
+    const notes = useSelector((state: { state: appState }) => selectNotes(state))
     const dispatch = useDispatch()
 
     return (

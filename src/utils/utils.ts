@@ -1,6 +1,6 @@
 import { spellDescriptions } from "../constants/magic"
 import { FORMULAS, FORMULAKEYS } from "../constants/stats"
-import { characterStats, characterStatsKeys, countersKeys, magicsTypes, trackedStat } from "../types/types"
+import { appState, characterStats, characterStatsKeys, countersKeys, customElements, magicsTypes, trackedStat } from "../types/types"
 
 const getRandomNumber = (max: number) => {
     return Math.floor(Math.random() * max)
@@ -28,18 +28,29 @@ export const getRollModalContent = (target: number, mod: number) => {
     }
 }
 
-export const saveFile = async (state: {stats: characterStats}) => {
-    const stats = state.stats 
-    const blob = new Blob([JSON.stringify(stats)], { type: 'application/json'})
+export const saveFile = async (state: { state: appState }) => {
+    const stats = state.state.characterStats
+    const customElements = state.state.customElements
+
+    const statsBlob = new Blob([JSON.stringify(stats)], { type: 'application/json'})
+    const customElementsBlob = new Blob([JSON.stringify(customElements)], { type: 'application/json'})
 
     const a = document.createElement('a')
     a.download = stats.info?.name ?? stats.meta.id
-    a.href = URL.createObjectURL(blob)
+    a.href = URL.createObjectURL(statsBlob)
     a.addEventListener('click', () => {
       setTimeout(() => URL.revokeObjectURL(a.href), 30 * 1000)
     })
     a.click()
-  };
+
+    const b = document.createElement('a')
+    b.download = 'customElements.json'
+    b.href = URL.createObjectURL(customElementsBlob)
+    b.addEventListener('click', () => {
+      setTimeout(() => URL.revokeObjectURL(b.href), 30 * 1000)
+    })
+    b.click()
+  }
 
 
 export const getGrowthCost = (type: string, value: number, increment: number) => {
@@ -84,9 +95,9 @@ export const getSkillGrowthCost = (skill: number, increment: number) => {
     return sign*cost
 }
 
-export const getBaseSpellGrowthCosts = (spellNames: string[]) => {
+export const getBaseSpellGrowthCosts = (customElements: customElements, spellNames: string[]) => {
     return spellNames.reduce<number>((acc: number, spell: string) => {
-        const s = spellDescriptions[spell]
+        const s = spellDescriptions[spell] ?? customElements.magic[spell]
         if (s.type === 'divine') {
             return acc + s.magnitude * 2 
         } else if (s.type === 'personal') {
@@ -113,6 +124,10 @@ const applyForumla = (stats: characterStats, type: characterStatsKeys) => {
         if (key in FORMULAS) {
             //@ts-expect-error TODO fix this later :P
             stats[type][key].base = FORMULAS[key](stats.characteristics)
+        } else if (key.includes('[')) {
+            // TODO SUUUUUUUUUUUPER hacky, make this better
+            //@ts-expect-error TODO fix this later :P
+            stats[type][key].base = stats.characteristics.intelligence.current
         }
         //@ts-expect-error TODO fix this later :P
         stats[type][key].current = calculateCurrent(stats[type][key])

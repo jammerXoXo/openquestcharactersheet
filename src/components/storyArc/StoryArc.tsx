@@ -12,7 +12,7 @@ type StoryArcProps = {
 const StoryArc = ({id, type}: StoryArcProps) => {
 
     const {setStoryModalState} = useContext(ModalContext)
-    const motives = useSelector((state: { stats: characterStats }) => selectMotive(state, type))
+    const motives = useSelector((state: { state: appState }) => selectMotive(state, type))
 
     return (
         <span className='storyarc' style={{marginLeft: '3px', opacity: motives[id].completed? '50%': '100%' }} onClick={() => {setStoryModalState({open: true, type: type, id: id})}} >{motives[id].name}</span>
