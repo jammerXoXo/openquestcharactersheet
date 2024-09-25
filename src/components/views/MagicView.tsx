@@ -27,7 +27,7 @@ const MagicView = () => {
     const [addingSpell, setAddingSpell] = useState<boolean>(false)
     const [newMagnitude, setNewMagnitude] = useState<number>(0)
     const [valid, setValid] = useState<boolean>(true)
-    const [popupOpen, setPopopOpen] = useState(false)
+    const [popupOpen, setPopopOpen] = useState('')
     const [searchTerm, setSearchTerm] = useState('')
 
     const {editingMode} = useContext(SheetContext)
@@ -102,9 +102,9 @@ const MagicView = () => {
                     <TableCell>{spell.name}</TableCell>
                     <TableCell>{spell.type}</TableCell>
                     <Popup
-                        onOpen={() => setPopopOpen(true)}
-                        onClose={() => setPopopOpen(false)}
-                        open={popupOpen}
+                        onOpen={() => setPopopOpen(spell.name)}
+                        onClose={() => setPopopOpen('')}
+                        open={popupOpen === spell.name}
                         on='click'
                         disabled={!spell.variable || spell.type === 'sorcery'} 
                         trigger={<TableCell>{spell.magnitude}{spell.variable? '+': ''}{spell.type === 'divine' || spell.type ==='personal' ? ` (${spell.learnedMagnitude})`:''}</TableCell>}

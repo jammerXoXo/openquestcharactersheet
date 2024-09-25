@@ -1,12 +1,14 @@
 import { useContext, useEffect, useMemo, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { Button, Container, Form, GridColumn, GridRow, Input, Label, Segment, Table, TableBody, TableCell, TableHeader, TableHeaderCell, TableRow } from "semantic-ui-react"
+import { Button, Container, Form, GridColumn, GridRow, Input, Label, Popup, Segment, Table, TableBody, TableCell, TableHeader, TableHeaderCell, TableRow } from "semantic-ui-react"
 import { appState, item } from "../../types/types"
-import { addItems,  deleteItems, selectCustomElements, selectInventory} from "../../state/CharacterContext"
+import { addItems,  deleteItems, selectCustomElements, selectInventory, updateItem} from "../../state/CharacterContext"
 import _ from "lodash"
 import { SheetContext } from "../../state/SheetContext"
 import { itemDescriptions } from "../../constants/items"
 
+
+const re = /\s*\d+\s*/
 
 const InventoryView = () => {
 
@@ -16,6 +18,9 @@ const InventoryView = () => {
     const [deleting, setDeleting] = useState<boolean>(false)
     const [addingItem, setAddingItem] = useState<boolean>(false)
     const [searchTerm, setSearchTerm] = useState('')
+    const [newCount, setNewCount] = useState<number>(0)
+    const [valid, setValid] = useState<boolean>(true)
+    const [popupOpen, setPopopOpen] = useState('')
 
     const {editingMode} = useContext(SheetContext)
 
@@ -63,6 +68,17 @@ const InventoryView = () => {
         return (item.name.toLowerCase().includes(searchTerm) || item.tags.toLowerCase().includes(searchTerm) || item.type.toLowerCase().includes(searchTerm))
     }
 
+    const validateCount = (value: string) => {
+        const match = re.exec(value)
+        if (match) {
+            const newCount = parseInt(value)
+            setNewCount(newCount)
+            setValid(true)
+        } else {
+            setValid(false)
+        }
+    }
+
     const getTableData = (itemList: item[]) => {
         let data = _.sortBy(itemList.filter(x => searchItems(x)), sortColumn)
         if (sortDirection === 'descending') {
@@ -72,6 +88,13 @@ const InventoryView = () => {
                     <TableCell>{item.name}</TableCell>
                     <TableCell>{item.type}</TableCell>
                     <TableCell>{item.enc}</TableCell>
+                    {addingItem? '' : <Popup
+                        onOpen={() => setPopopOpen(item.name)}
+                        onClose={() => setPopopOpen('')}
+                        open={popupOpen === item.name}
+                        on='click' 
+                        trigger={<TableCell>{item.count ?? 0 }</TableCell>}
+                        content={<Input onKeyPress={(e: {key: string}) => e.key === 'Enter' && dispatch(updateItem({itemName: item.name, newValue: {count: newCount}}))} size='mini' action={{ content: 'set', onClick: () => dispatch(updateItem({itemName: item.name, newValue: {count: newCount}}))}} onChange={(_, {value}) => validateCount(value)} placeholder='Set Count...' error={!valid}/>}/>}
                     <TableCell>{item.cost}</TableCell>
                     <TableCell>{item.tags}</TableCell>        
                 </TableRow>)
@@ -137,6 +160,13 @@ const InventoryView = () => {
                                         onClick={() => updateSort('enc')}>
                                         Enc
                                     </TableHeaderCell>
+                                    {addingItem? '' :
+                                    <TableHeaderCell
+                                        sorted={sortColumn === 'count' ? sortDirection: undefined}
+                                        onClick={() => updateSort('count')}>
+                                        Count
+                                    </TableHeaderCell>
+                                    }
                                     <TableHeaderCell
                                         sorted={sortColumn === 'cost' ? sortDirection: undefined}
                                         onClick={() => updateSort('cost')}>

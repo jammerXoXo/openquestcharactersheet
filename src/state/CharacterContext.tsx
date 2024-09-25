@@ -186,14 +186,29 @@ const statsSlice = createSlice({
             state.characterStats.inventory = state.characterStats.inventory.filter(item => action.payload.itemNames.indexOf(item.name) === -1)
         },
         addItems: (state: appState, action: PayloadAction<{itemNames: string[]}>) => {
-            action.payload.itemNames.forEach((itemName: string) => state.characterStats.inventory.push({
-                name: itemDescriptions[itemName]?.name ?? state.customElements.items[itemName].name,
-                tags: itemDescriptions[itemName]?.tags ?? state.customElements.items[itemName].tags,
-                enc: itemDescriptions[itemName]?.enc ?? state.customElements.items[itemName].enc,
-                type: itemDescriptions[itemName]?.type ?? state.customElements.items[itemName].type,
-                cost: itemDescriptions[itemName]?.cost ?? state.customElements.items[itemName].cost,
-                description: itemDescriptions[itemName]?.description ?? state.customElements.items[itemName].description,
-            }))
+            action.payload.itemNames.forEach((itemName: string) => {
+                const newItem = {
+                    name: itemDescriptions[itemName]?.name ?? state.customElements.items[itemName].name,
+                    tags: itemDescriptions[itemName]?.tags ?? state.customElements.items[itemName].tags,
+                    enc: itemDescriptions[itemName]?.enc ?? state.customElements.items[itemName].enc,
+                    type: itemDescriptions[itemName]?.type ?? state.customElements.items[itemName].type,
+                    cost: itemDescriptions[itemName]?.cost ?? state.customElements.items[itemName].cost,
+                    description: itemDescriptions[itemName]?.description ?? state.customElements.items[itemName].description,
+                    count: 1
+                }
+                const index = state.characterStats.inventory.findIndex(x => x.name === itemName)
+                if (index >= 0) {
+                    state.characterStats.inventory[index] = {...state.characterStats.inventory[index], count: (state.characterStats.inventory[index].count ?? 0) + 1}
+                } else {
+                    state.characterStats.inventory.push(newItem)
+                }
+            })
+        },
+        updateItem: (state: appState, action: PayloadAction<{itemName: string, newValue: Partial<item>}>) => {
+            const index = state.characterStats.inventory.findIndex(x => x.name === action.payload.itemName)
+            if (index >= 0) {
+                state.characterStats.inventory[index] = {...state.characterStats.inventory[index], ...action.payload.newValue}
+            }
         },
         updateNotes: (state: appState, action: PayloadAction<{newValue: string}>) => {
             state.characterStats.notes = action.payload.newValue
@@ -320,6 +335,6 @@ store.subscribe(() => {
 const { actions, selectors, reducer } = statsSlice
 
 export const { dispatch } = store
-export const { updateCharacteristic, updateSkill, updateStory, deleteStory, updateDetail, applyDamage, updateCounter, updateAttribute, loadCharacter, newCharacter, deleteSpells, addSpells, updateSpell, deleteItems, addItems, updateNotes, addCustomItem, addCustomSkill, addCustomSpell, deleteCustomElement } = actions
+export const { updateCharacteristic, updateSkill, updateStory, deleteStory, updateDetail, applyDamage, updateCounter, updateAttribute, loadCharacter, newCharacter, deleteSpells, addSpells, updateSpell, deleteItems, addItems, updateItem, updateNotes, addCustomItem, addCustomSkill, addCustomSpell, deleteCustomElement } = actions
 export const { selectAttribute, selectCharacteristic, selectSkill, selectMotive, selectInfo, selectCounter, selectMagic, selectInventory, selectNotes, selectCustomElements, selectCustomSkills } = selectors
 export default reducer

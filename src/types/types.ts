@@ -59,7 +59,8 @@ export type item = {
     enc: number
     cost: string
     tags: string 
-    description: string 
+    description: string
+    count?: number
 }
 
 export type characteristicsKeys = 'strength' | 'constitution' | 'dexterity' | 'size' | 'intelligence' | 'power' | 'charisma'

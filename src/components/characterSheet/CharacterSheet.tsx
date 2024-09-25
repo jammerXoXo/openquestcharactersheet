@@ -61,8 +61,8 @@ const CharacterSheet = () => {
                 <Menu attached='top' >
                     <MenuItem position="right" className='menubutton' name='dice tray' disabled={true}/>
                     <MenuItem className='menubutton' name='edit' onClick={() => setEditingMode(!editingMode)} active={editingMode} />
-                    <MenuItem className='menubutton' name={newChar? 'are you sure':'clear sheet'} onClick={() => dispatchNewCharacter()} />
                     <MenuItem className='menubutton' name='Add skill/spell/item' onClick={() => setCustomModalState({open: true})}/>
+                    <MenuItem className='menubutton' name={newChar? 'are you sure':'clear sheet'} onClick={() => dispatchNewCharacter()} />
                     <MenuItem className='menubutton' name='load' onClick={() => setLoadModalState({open: true})} />
                     {/* @ts-expect-error  TODO fix this later :P */}
                     <MenuItem className='menubutton' name='download' onClick={() => saveFile(state)} />
