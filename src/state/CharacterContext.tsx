@@ -249,7 +249,37 @@ const statsSlice = createSlice({
                 }
             }
             applyForumlas(state.characterStats)
-        }   
+        },
+        deleteCustomElement: (state: appState, action: PayloadAction<{value: string}>) => {
+
+            const [key, value] = action.payload.value.split('_')
+
+            if (key === 'knowledge') {
+                const index = (state.characterStats.customSkills.knowledge?.skills ?? []).findIndex(x => x.skill === value)
+                if (index) {
+                    state.characterStats.customSkills.knowledge?.skills.splice(index, 1)
+                }
+                delete state.characterStats.skills[value as skillsKeys]
+            } else if (key === 'magic') {
+                const index = (state.characterStats.customSkills.magic?.skills ?? []).findIndex(x => x.skill === value)
+                if (index) {
+                    state.characterStats.customSkills.magic?.skills.splice(index, 1)
+                }
+                delete state.characterStats.skills[value as skillsKeys]
+            } else if (key === 'item') {
+                const index = state.characterStats.inventory.findIndex(x => x.name === value)
+                if (index) {
+                    state.characterStats.inventory.splice(index, 1)
+                }
+                delete state.customElements.items[value]
+            } else if (key === 'spell') {
+                const index = state.characterStats.magic.findIndex(x => x.name === value)
+                if (index) {
+                    state.characterStats.magic.splice(index, 1)
+                }
+                delete state.customElements.magic[value]
+            } 
+        }
     },
     selectors: {
         selectAttribute: (state: appState, target: attributesKeys) => state.characterStats.attributes[target],
@@ -289,6 +319,6 @@ store.subscribe(() => {
 const { actions, selectors, reducer } = statsSlice
 
 export const { dispatch } = store
-export const { updateCharacteristic, updateSkill, updateStory, deleteStory, updateDetail, applyDamage, updateCounter, updateAttribute, loadCharacter, newCharacter, deleteSpells, addSpells, updateSpell, deleteItems, addItems, updateNotes, addCustomItem, addCustomSkill, addCustomSpell } = actions
+export const { updateCharacteristic, updateSkill, updateStory, deleteStory, updateDetail, applyDamage, updateCounter, updateAttribute, loadCharacter, newCharacter, deleteSpells, addSpells, updateSpell, deleteItems, addItems, updateNotes, addCustomItem, addCustomSkill, addCustomSpell, deleteCustomElement } = actions
 export const { selectAttribute, selectCharacteristic, selectSkill, selectMotive, selectInfo, selectCounter, selectMagic, selectInventory, selectNotes, selectCustomElements, selectCustomSkills } = selectors
 export default reducer

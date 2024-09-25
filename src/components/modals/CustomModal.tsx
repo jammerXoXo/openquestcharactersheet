@@ -1,9 +1,9 @@
-import { useContext, useState } from "react"
+import { useContext, useMemo, useState } from "react"
 import { ModalContext } from "../../state/ModalContext"
-import { Button, Dropdown, Form, FormDropdown, FormField, FormGroup, FormInput, Modal, ModalContent, Segment } from "semantic-ui-react"
-import { item, spellDescription } from "../../types/types"
-import { useDispatch } from "react-redux"
-import { addCustomItem, addCustomSkill, addCustomSpell } from "../../state/CharacterContext"
+import { Button, Divider, Dropdown, Form, FormDropdown, FormField, FormGroup, FormInput, Modal, ModalContent, Segment } from "semantic-ui-react"
+import { appState, baseSpell, item, spellDescription } from "../../types/types"
+import { useDispatch, useSelector } from "react-redux"
+import { addCustomItem, addCustomSkill, addCustomSpell, deleteCustomElement, selectCustomElements, selectCustomSkills } from "../../state/CharacterContext"
 
 const re = /-?\d+/
 
@@ -101,8 +101,21 @@ const CustomModal = () => {
     const [itemInfo, setItemInfo] = useState({type: 'other'} as item)
     const [spellInfo, setSpellInfo] = useState({type: 'personal', variable: true} as spellDescription)
     const [skillName, setSkillName] = useState('')
+    const [elementToDelete, setElementToDelete] = useState('')
+
+    
+    const customSkills = useSelector((state: { state: appState }) => selectCustomSkills(state))
+    const customElements = useSelector((state: { state: appState }) => selectCustomElements(state))
 
     const dispatch = useDispatch()
+
+    const getAllCustomElements = useMemo(() => {
+        return [...customSkills.knowledge?.skills?.map(x => ({key: x.skill, text: x.display, value: `knowledge_${x.skill}`})) ?? [],
+                ...customSkills.magic?.skills?.map(x => ({key: x.skill, text: x.display, value: `magic_${x.skill}`})) ?? [],
+                ...(Object.values(customElements.items ?? {}) as item[]).map((item) => ({key: item.name, text: item.name, value: `item_${item.name}`})),
+                ...(Object.values(customElements.magic ?? {}) as baseSpell[]).map((spell) => ({key: spell.name, text: spell.name, value: `spell_${spell.name}`}))
+     ]
+    }, [customSkills, customElements])
 
     const getSkillDisplayName = (skill: string) => {
         if (skill === 'lang') {
@@ -152,7 +165,7 @@ const CustomModal = () => {
                 <>
                     <FormInput error={!(itemInfo?.name) || itemInfo.name.length === 0} fluid label='Name' onChange={(_, {value}) => updateInfo({name: value} as item)}/>
                     <FormGroup inline>
-                        <FormDropdown label='Type' options={itemOptions} defaultValue='other' onChange={(_, {value}) => updateInfo({type: value} as item)}/>
+                        <FormDropdown selection label='Type' options={itemOptions} defaultValue='other' onChange={(_, {value}) => updateInfo({type: value} as item)}/>
                         <FormInput label='Enc' onChange={(_, {value}) => updateInfo({enc: parseInt(value)} as item)}/>
                         <FormInput label='Cost' onChange={(_, {value}) => updateInfo({cost: value} as item)}/>
                     </FormGroup>
@@ -165,8 +178,8 @@ const CustomModal = () => {
                 <>
                     <FormInput error={!(spellInfo?.name) || spellInfo.name.length === 0} fluid label='Name' onChange={(_, {value}) => updateInfo({name: value} as spellDescription)}/>
                     <FormGroup inline>
-                        <FormDropdown label='Type' options={spellTypes} defaultValue='personal' onChange={(_, {value}) => updateInfo({type: value} as spellDescription)}/>
-                        <FormDropdown label='Variable Magnitude' options={spellVariabilities} defaultValue={true} onChange={(_, {value}) => updateInfo({variable: value} as spellDescription)}/>
+                        <FormDropdown selection label='Type' options={spellTypes} defaultValue='personal' onChange={(_, {value}) => updateInfo({type: value} as spellDescription)}/>
+                        <FormDropdown selection label='Variable Magnitude' options={spellVariabilities} defaultValue={true} onChange={(_, {value}) => updateInfo({variable: value} as spellDescription)}/>
                         <FormInput error={!re.exec(String(spellInfo?.magnitude ?? ''))} label='Base Magnitude' onChange={(_, {value}) => updateInfo({magnitude: parseInt(value)} as spellDescription)}/>
                     </FormGroup>
                     <FormInput fluid label='Tags' onChange={(_, {value}) => updateInfo({tags: value} as spellDescription)}/>
@@ -191,13 +204,22 @@ const CustomModal = () => {
             style={{minWidth: '500px', minHeight: '600px'}}
         >
             <ModalContent>
-                <Segment style={{height: '500px'}}>
+                <Segment style={{height: '440px'}}>
+                    <h4>Select type of element to add</h4>
                     <Dropdown placeholder="Select type..." fluid selection options={typeOptions} onChange={(_, {value}) => setChosenType(String(value ?? ''))}/>
                     <Form onSubmit={() => handleSubmit()}>
                         {getContent()}
                         {chosenType?.length ?? 0 > 0 ? <FormField control={Button}>Submit</FormField>: null }
                     </Form>
                 </Segment>
+                <Divider style={{textAlign: 'center'}}>Or</Divider>
+                <div style={{display: 'flex', justifyContent: 'flex-end'}}>
+                    <Dropdown fluid size='mini' selection placeholder="Select existing item/spell/skill to delete" options={getAllCustomElements} onChange={(_, {value}) => setElementToDelete(String(value ?? ''))}/>
+                    <Button label='Delete' icon='trash' labelPosition="left" onClick={() => {
+                        if ((elementToDelete?.length ?? 0 ) > 0) {
+                            dispatch(deleteCustomElement({value: elementToDelete}))
+                    }}}/>
+                </div>
             </ModalContent>
         </Modal>
     )

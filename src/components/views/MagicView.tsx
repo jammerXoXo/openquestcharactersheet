@@ -45,7 +45,11 @@ const MagicView = () => {
 
     useEffect(() => {
         setSelected({} as {[key: string]: number})
-    }, [editingMode, addingSpell])
+    }, [addingSpell])
+
+    useEffect(() => {
+        setAddingSpell(false)
+    }, [editingMode])
 
     const updateSelected = (spell: string) => {
         if (!editingMode) {

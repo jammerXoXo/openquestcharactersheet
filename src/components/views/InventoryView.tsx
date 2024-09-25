@@ -30,7 +30,11 @@ const InventoryView = () => {
 
     useEffect(() => {
         setSelected({} as {[key: string]: number})
-    }, [editingMode, addingItem])
+    }, [addingItem])
+
+    useEffect(() => {
+        setAddingItem(false)
+    }, [editingMode])
 
     const updateSelected = (spell: string) => {
         if (!editingMode) {
