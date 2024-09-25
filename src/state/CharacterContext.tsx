@@ -306,6 +306,7 @@ store.subscribe(() => {
     if (!timer) {
         timer = setTimeout(() => {
             const {state} = store.getState()
+            document.title = `OpenQuest - ${state.characterStats.info.name}`
             localStorage.setItem(`characters/${state.characterStats.meta.id}`, JSON.stringify(state.characterStats))
             localStorage.setItem(`options/lastsaved`, state.characterStats.meta.id)
             localStorage.setItem('customElements', JSON.stringify(state.customElements))
