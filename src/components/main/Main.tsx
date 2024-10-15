@@ -7,7 +7,6 @@ import { newCharacter } from "../../state/CharacterContext"
 import { useDispatch, useStore } from "react-redux"
 import { saveFile } from "../../utils/utils"
 import RollModal from "../modals/RollModal"
-import StoryModal from "../modals/StoryModal"
 import CustomModal from "../modals/CustomModal"
 import OptionsModal from "../modals/OptionsModal"
 import LoadModal from "../modals/LoadModal"
@@ -46,7 +45,6 @@ const Main = () => {
                 <MenuItem className='menubutton' name='download' onClick={() => saveFile(state)} />
             </Menu>
             <RollModal/>
-            <StoryModal/>
             <LoadModal />
             <CustomModal/>
             <OptionsModal/>
