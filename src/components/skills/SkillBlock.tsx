@@ -50,7 +50,7 @@ const SkillBlock = ({type}: SkillBlockProps) => {
     return (
         <div className='skillblock' style={{backgroundColor: getBackgroundColor(type), borderRadius: '10px', margin: '8px', overflow: 'auto'}}>
             <Label style={{marginBottom: '3px', borderRadius: '0px 0px 5px 5px'}}>{SKILLS[type]?.display ?? 'custom'}</Label>
-            <div style={{display: 'flex', flexDirection: 'column', flexWrap: 'wrap', maxHeight: '250px', overflow: 'auto'}}>
+            <div style={{display: 'flex', flexDirection: 'column', flexWrap: type==="practical"? 'wrap':'nowrap', maxHeight: '200px', overflow: 'auto'}}>
                 {getSkills(type)?.map((value) => <Skill key={value.skill} target={value.skill} displayText={value.display} type='skills'></Skill>)}
             </div>
         </div>

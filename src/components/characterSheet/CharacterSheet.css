@@ -50,7 +50,7 @@
     flex: 1 1 95px;
     margin-left: 5px;
     margin-right: 5px;
-    margin-bottom: 30px;
+    margin-bottom: 10px;
     height: 85px;
 }
 
@@ -59,7 +59,10 @@
     flex-direction: row;
     flex-grow: 1;
     justify-content: space-between;
-    margin: 5px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    margin-left: 5px;
+    margin-right: 5px;
 }
 
 .skillblock {
@@ -78,9 +81,11 @@
 
 .charactersheet {
     /* width: 1050px !important; */
-    background-color: rgba(255, 255, 255, 0.123) !important;
+    background-color: transparent !important;
     margin: 0 !important;
     background-color: white;
+    border-width: 0px !important;
+    box-shadow: none !important;
 }
 
 @keyframes successanim {
