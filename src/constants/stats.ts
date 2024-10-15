@@ -1,4 +1,4 @@
-import { attributesDescriptions, attributesKeys, characteristics, characteristicsDescriptions, countersKeys, motivesDescriptions, skillDescriptions, skillsKeys } from "../types/types"
+import { attributesDescriptions, attributesKeys, characteristics, characteristicsDescriptions, countersKeys, notesDescriptions, skillDescriptions, skillsKeys } from "../types/types"
 
 export const CHARACTERISTICS: characteristicsDescriptions = {
     strength: {
@@ -58,7 +58,7 @@ export const ATTRIBUTES: attributesDescriptions = {
     }
 }
 
-export const MOTIVES: motivesDescriptions = {
+export const NOTES: notesDescriptions = {
     saga: {
         abbr: "saga",
         display: "Saga"
@@ -66,6 +66,10 @@ export const MOTIVES: motivesDescriptions = {
     quest: {
         abbr: "quest",
         display: "Quest"
+    },
+    misc: {
+        abbr: "misc",
+        display: "Notes"
     }
 }
 
