@@ -1,18 +1,18 @@
 import { useContext } from "react"
 import { ModalContext } from "../../state/ModalContext"
-import { appState, motivesKeys } from "../../types/types"
+import { appState, notesKeys } from "../../types/types"
 import { useSelector } from "react-redux"
-import { selectMotive } from "../../state/CharacterContext"
+import { selectNotes } from "../../state/CharacterContext"
 
 type StoryArcProps = {
     id: string
-    type: motivesKeys
+    type: notesKeys
 }
 
 const StoryArc = ({id, type}: StoryArcProps) => {
 
     const {setStoryModalState} = useContext(ModalContext)
-    const motives = useSelector((state: { state: appState }) => selectMotive(state, type))
+    const motives = useSelector((state: { state: appState }) => selectNotes(state, type))
 
     return (
         <span className='storyarc' style={{marginLeft: '3px', opacity: motives[id].completed? '50%': '100%' }} onClick={() => {setStoryModalState({open: true, type: type, id: id})}} >{motives[id].name}</span>

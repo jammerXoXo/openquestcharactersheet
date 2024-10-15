@@ -1,6 +1,8 @@
 import { spellDescriptions } from "../constants/magic"
 import { FORMULAS, FORMULAKEYS } from "../constants/stats"
+import { characterStatsVersion } from "../constants/versions"
 import { appState, characterStats, characterStatsKeys, countersKeys, customElements, magicsTypes, trackedStat } from "../types/types"
+import { v4 as uuid} from 'uuid'
 
 const getRandomNumber = (max: number) => {
     return Math.floor(Math.random() * max)
@@ -10,7 +12,7 @@ const getRandomNumber = (max: number) => {
 export const getRollModalContent = (target: number, mod: number, text: string) => {
     const first = getRandomNumber(10)
     const second = getRandomNumber(10)
-    const total = first * 10 + second
+    const total = (first === 0 && second === 0)? 100: first * 10 + second
     const crit = first === second
     const test = (1 + mod/100) * target
     let success = false
@@ -150,3 +152,27 @@ export const applyForumlas = (stats: characterStats) => {
     (Object.keys(stats.counters) as Array<countersKeys>).filter((key: countersKeys) => key in FORMULAS).forEach((key: countersKeys & FORMULAKEYS ) => stats.counters[key] = FORMULAS[key](stats.characteristics))
     return stats
 }
+
+export const restoreCharacter = (char: string) => {
+    const {version, ...character } = JSON.parse(char)
+
+    if (!version) {   // aka version 1.0
+        // Update to version 1.1
+        const notes = character.notes
+        character.notes = character.motives
+        character.notes.misc = {
+            [uuid()]: {
+                name: 'restored',
+                story: notes,
+                completed: false
+            }
+        }
+        delete character.motives
+    }
+
+    return character as characterStats
+}
+
+export const persistCharacter = (char: characterStats) => {
+    localStorage.setItem(`characters/${char.meta.id}`, JSON.stringify({...char, version: characterStatsVersion }))
+} 

@@ -114,10 +114,12 @@ export const getDefaultCharacter = (uuid:string): appState => {
                     point_mod_perc: 1,
                 }
             },
-            motives: {
+            notes: {
                 saga: {
                 },
                 quest: {
+                },
+                misc: {
                 }
             },
             skills: {
@@ -359,7 +361,6 @@ export const getDefaultCharacter = (uuid:string): appState => {
             magic: [
             ],
             inventory: [],
-            notes: '',
             customSkills: {
                 knowledge: {
                     abbr: "knowl",

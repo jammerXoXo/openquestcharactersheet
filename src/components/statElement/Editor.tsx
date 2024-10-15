@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Button, Input, Popup } from "semantic-ui-react"
+import { Button, Popup } from "semantic-ui-react"
 import { characteristicsKeys, appState, characterStatsKeys, skillsKeys } from "../../types/types"
 import { useDispatch, useSelector } from "react-redux"
 import { selectCharacteristic, selectSkill, updateCharacteristic, updateSkill } from "../../state/CharacterContext"
@@ -52,11 +52,11 @@ const Editor = ({type, targetSkill = 'dodge', targetCharacteristic = 'strength'}
     }, [])
 
     return (
-        <Input type="text" size='mini'>
+        <div>
             <Popup basic on='hover' className='growthpopup' size='mini' content={`Cost: ${getGrowthCost(type, stat.current, ctrlHeld? -5 : -1)}`} trigger={<Button size='mini' icon='minus' onClick={() => {updateValue(ctrlHeld? -5 :-1)}}></Button> }/>
-            <input style={{width: '50px', height: '28px', borderLeft:'0px', borderBottom: '0px', borderRight: '0px'}} value={`${stat.current}(${stat.point_mod})`}/>
+            <span style={{width:'45px', display: 'inline-block'}}>{`${stat.current}(${stat.point_mod})`}</span>
             <Popup basic on='hover' className='growthpopup' size='mini' content={`Cost: ${getGrowthCost(type, stat.current, ctrlHeld? 5 : 1)}`} trigger={<Button size='mini' icon='plus' onClick={() => {updateValue(ctrlHeld? 5 : 1)}}></Button> }/>
-        </Input>
+        </div>
     )
 }
 

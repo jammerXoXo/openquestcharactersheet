@@ -2,18 +2,18 @@ import { useContext, useState } from "react"
 import { ModalContext } from "../../state/ModalContext"
 import { Button, Form, Input, Modal, ModalContent, TextArea } from "semantic-ui-react"
 import { useDispatch, useSelector } from "react-redux"
-import { deleteStory, selectMotive, updateStory } from "../../state/CharacterContext"
+import { deleteNote, selectNotes, updateNote } from "../../state/CharacterContext"
 import { appState, story, storyModalState } from "../../types/types"
 
 const StoryModal = () => {
     const {storyModalState, setStoryModalState} = useContext(ModalContext)
     const dispatch = useDispatch()
     const [deleting, setDeleting] = useState(false)
-    const motives = useSelector((state: { state: appState }) => selectMotive(state, storyModalState.type))
+    const motives = useSelector((state: { state: appState }) => selectNotes(state, storyModalState.type))
 
     const dispatchUpdateStory = (newValue: Partial<story>) => {
         if (storyModalState?.open) {
-            dispatch(updateStory({target: storyModalState.id, newValue: newValue, type: storyModalState.type}))
+            dispatch(updateNote({target: storyModalState.id, newValue: newValue, type: storyModalState.type}))
         }
     }
 
@@ -21,7 +21,7 @@ const StoryModal = () => {
         if (deleting) {
             setDeleting(false)
             setStoryModalState({...storyModalState, open: false})
-            dispatch(deleteStory({target: storyModalState.id, type: storyModalState.type}))
+            dispatch(deleteNote({target: storyModalState.id, type: storyModalState.type}))
         } else {
             setDeleting(true)
         }

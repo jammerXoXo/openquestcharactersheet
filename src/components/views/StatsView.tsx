@@ -1,7 +1,6 @@
 import { GridColumn, GridRow } from "semantic-ui-react"
-import StoryElement from "../storyArc/StoryElement"
-import Portrait from "../portrait/Portrait"
 import SkillBlock from "../skills/SkillBlock"
+import CharacteristicList from "../characteristic/CharacteristicList"
 
 
 const StatsView = () => {
@@ -18,7 +17,7 @@ const StatsView = () => {
                     <PersonalDetails/>
                 </GridColumn>
             </GridRow> */}
-            <GridRow>
+            {/* <GridRow>
                 <GridColumn width={6}>
                     <StoryElement type='saga'/>
                 </GridColumn>
@@ -28,18 +27,22 @@ const StatsView = () => {
                 <GridColumn width={4}>
                     <Portrait/>
                 </GridColumn>
+            </GridRow> */}
+            <GridRow style={{paddingBottom: '0px'}}>
+                <GridColumn width={16}>
+                    <CharacteristicList />
+
+                </GridColumn>
             </GridRow>
-            <GridRow style={{height: '374px'}}>
-                <GridColumn width={4}>
+            <GridRow style={{paddingTop: '0px'}}>
+                <GridColumn width={12} style={{display: 'flex', paddingRight: '0px', flexWrap: 'wrap'}}>
                     <SkillBlock type='combat'/>
                     <SkillBlock type='magic'/>
-                </GridColumn>
-                <GridColumn width={4}>
                     <SkillBlock type='resistance'/>
-                    <SkillBlock type='knowledge'/>
-                </GridColumn>
-                <GridColumn width={8}>
                     <SkillBlock type='practical' />
+                </GridColumn>
+                <GridColumn width={4} style={{paddingLeft: '0px', display: 'flex', flexDirection: 'column'}}>
+                    <SkillBlock type='knowledge' />
                 </GridColumn>
             </GridRow>
         </>

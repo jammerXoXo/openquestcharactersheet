@@ -9,7 +9,7 @@ export type rollModalState = {
 
 export type storyModalState = {
     open: boolean
-    type: motivesKeys
+    type: notesKeys
     id: string
 }
 
@@ -74,8 +74,8 @@ export type characteristics =  { [key in characteristicsKeys]: trackedStat }
 export type attributesKeys = 'damageMod' | 'hitPoints' | 'magicPoints' | 'movement' | 'armor' | 'growth'
 export type attributes = { [key in attributesKeys]: trackedStat }
 
-export type motivesKeys = 'saga' | 'quest'
-export type motives = { [key in motivesKeys]: { [key: string]: story } }
+export type notesKeys = 'saga' | 'quest' | 'misc'
+export type notes = { [key in notesKeys]: { [key: string]: story } }
 
 export type skillTypes = 'resistance' | 'combat' | 'knowledge' | 'magic' | 'practical'
 export type resistanceSkillsKeys = 'dodge' | 'persistance' | 'resilience'
@@ -101,19 +101,18 @@ export type inventory = item[]
 export type trackedInfoKeys = 'image' | 'name' | 'gender' | 'age' | 'culture' | 'concept' | 'rank' | 'org'
 export type trackedInfo = { [key in trackedInfoKeys]: string }
 
-export type characterStatsKeys = 'characteristics' | 'attributes' | 'motives' | 'skills' | 'info' | 'counters' | 'meta' | 'magic' | 'inventory'
+export type characterStatsKeys = 'characteristics' | 'attributes' | 'notes' | 'skills' | 'info' | 'counters' | 'meta' | 'magic' | 'inventory'
 
 export type characterStats = {
     characteristics: characteristics
     attributes: attributes
-    motives: motives
+    notes: notes
     skills: skills
     info: trackedInfo
     counters: counters
     meta: meta
     magic: magic
     inventory: inventory
-    notes: string
     customSkills: Partial<skillDescriptions>
 }
 
@@ -153,7 +152,7 @@ export type skillBlock<T extends string> = {
 
 export type characteristicsDescriptions = { [key in characteristicsKeys]: basicDescription }
 export type attributesDescriptions = { [key in attributesKeys]: basicDescription }
-export type motivesDescriptions = { [key in motivesKeys]: basicDescription }
+export type notesDescriptions = { [key in notesKeys]: basicDescription }
 export type skillDescriptions = {
     resistance: skillBlock<resistanceSkillsKeys>
     combat: skillBlock<combatSkillsKeys>

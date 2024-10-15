@@ -19,7 +19,7 @@ const Skill = ({target, displayText, type}: SkillProps) => {
 
     if (skill) {
         return (
-            <div className="characteristic">
+            <div className="skill">
                 <div>{displayText}</div>
                 {editingMode?
                 <Editor type={type} targetSkill={target}/>:

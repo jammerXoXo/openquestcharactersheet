@@ -5,11 +5,11 @@ import { v4 as uuid} from 'uuid'
 import { ModalContext } from "../../state/ModalContext"
 import { SheetContext } from "../../state/SheetContext"
 import { useDispatch, useSelector } from "react-redux"
-import { selectMotive, updateStory } from "../../state/CharacterContext"
-import { appState, motivesKeys } from "../../types/types"
+import { selectNotes, updateNote } from "../../state/CharacterContext"
+import { appState, notesKeys } from "../../types/types"
 
 type StoryElementProps = {
-    type: motivesKeys
+    type: notesKeys
 }
 
 const StoryElement = ({type}: StoryElementProps) => {
@@ -17,7 +17,7 @@ const StoryElement = ({type}: StoryElementProps) => {
     const {setStoryModalState} = useContext(ModalContext)
     const {editingMode} = useContext(SheetContext)
     const dispatch = useDispatch()
-    const motives = useSelector((state: { state: appState }) => selectMotive(state, type))
+    const motives = useSelector((state: { state: appState }) => selectNotes(state, type))
 
     const [showCompleted, setShowCompleted] = useState(false)
 
@@ -25,7 +25,7 @@ const StoryElement = ({type}: StoryElementProps) => {
 
     const addNewStory = () => {
         const id = uuid()
-        dispatch(updateStory({type: type, target: id, newValue: {story: '', name: '', completed: false}}))
+        dispatch(updateNote({type: type, target: id, newValue: {story: '', name: '', completed: false}}))
         setStoryModalState({open: true, type: type, id: id})
     }
 

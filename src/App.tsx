@@ -3,8 +3,8 @@ import './App.css'
 import { Provider } from 'react-redux'
 import { SheetProvider } from './state/SheetContext'
 import { ModalProvider } from './state/ModalContext'
-import CharacterSheet from './components/characterSheet/CharacterSheet'
 import { store } from './state/CharacterContext'
+import Main from './components/main/Main'
 
 
 function App() {
@@ -14,7 +14,7 @@ function App() {
       <Provider store={store}>
         <SheetProvider>
           <ModalProvider>
-            <CharacterSheet/>
+            <Main/>
           </ModalProvider>
         </SheetProvider>
       </Provider>

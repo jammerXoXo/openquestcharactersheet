@@ -4,6 +4,7 @@ import { Button, Form, FormDropdown, FormTextArea, Modal, ModalContent, Segment,
 import { appState, characterStats } from "../../types/types"
 import { useDispatch } from "react-redux"
 import { loadData } from "../../state/CharacterContext"
+import { restoreCharacter } from "../../utils/utils"
 
 
 const dataTypes: Array<{key: string, text: string, value: keyof appState}> = [
@@ -46,7 +47,7 @@ const LoadModal = () => {
     useEffect(() => {
         setCharacters(Object.keys(localStorage).filter(x => x.includes('characters')).map(x => {
             try {
-                return JSON.parse(localStorage.getItem(x) as string)
+                return restoreCharacter(localStorage.getItem(x) as string)
             } catch (error) {
                 console.log(error)
             }
@@ -65,12 +66,10 @@ const LoadModal = () => {
         }
     }
 
-    useEffect(() => console.log(uploadedJSON), [uploadedJSON])
-
     const handleUpload = () => {
         if (uploading && uploadedJSON) {
             try {
-                const content = JSON.parse(uploadedJSON)
+                const content = restoreCharacter(uploadedJSON)
                 dispatch(loadData({newValue: content, type: dataType}))
                 setUploading(false)
                 setFailedUpload(false)
