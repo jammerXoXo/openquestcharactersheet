@@ -159,12 +159,14 @@ export const restoreCharacter = (char: string) => {
     if (!version) {   // aka version 1.0
         // Update to version 1.1
         const notes = character.notes
-        character.notes = character.motives
-        character.notes.misc = {
-            [uuid()]: {
-                name: 'restored',
-                story: notes,
-                completed: false
+        if (character.motives) {
+            character.notes = character.motives
+            character.notes.misc = {
+                [uuid()]: {
+                    name: 'restored',
+                    story: notes,
+                    completed: false
+                }
             }
         }
         delete character.motives
