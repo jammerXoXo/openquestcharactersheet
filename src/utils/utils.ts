@@ -14,7 +14,7 @@ export const getRollModalContent = (target: number, mod: number, text: string) =
     const second = getRandomNumber(10)
     const total = (first === 0 && second === 0)? 100: first * 10 + second
     const crit = first === second
-    const test = (1 + mod/100) * target
+    const test =  target + mod
     let success = false
 
     if ( total < test) {

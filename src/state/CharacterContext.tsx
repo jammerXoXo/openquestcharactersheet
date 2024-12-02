@@ -54,6 +54,9 @@ const statsSlice = createSlice({
     name: 'state',
     initialState: getLastCharacter(),
     reducers: {
+        incrementGrowthPoints: (state: appState, action: PayloadAction<{increment: number}>) => {
+            addGrowthPoints(state, action.payload.increment)
+        },
         updateCharacteristic: (state: appState, action: PayloadAction<{target: characteristicsKeys, increment: number}>) => {
             const target = action.payload.target
             const increment = action.payload.increment
@@ -347,6 +350,6 @@ store.subscribe(() => {
 const { actions, selectors, reducer } = statsSlice
 
 export const { dispatch } = store
-export const { updateCharacteristic, updateSkill, updateNote, deleteNote, updateDetail, applyDamage, updateCounter, updateAttribute, loadData, newCharacter, deleteSpells, addSpells, updateSpell, deleteItems, addItems, updateItem, addCustomItem, addCustomSkill, addCustomSpell, deleteCustomElement, updateOptions } = actions
+export const { incrementGrowthPoints,  updateCharacteristic, updateSkill, updateNote, deleteNote, updateDetail, applyDamage, updateCounter, updateAttribute, loadData, newCharacter, deleteSpells, addSpells, updateSpell, deleteItems, addItems, updateItem, addCustomItem, addCustomSkill, addCustomSpell, deleteCustomElement, updateOptions } = actions
 export const { selectAttribute, selectCharacteristic, selectSkill, selectInfo, selectCounter, selectMagic, selectInventory, selectNotes, selectCustomElements, selectCustomSkills, selectOptions } = selectors
 export default reducer
