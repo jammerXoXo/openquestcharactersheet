@@ -14,7 +14,7 @@ const Portrait = () => {
 
 
     return (
-        <Popup disabled={!editingMode} hoverable trigger={<Image src={info.image} style={{height: '200px', objectFit: 'contain'}}></Image>}>
+        <Popup disabled={!editingMode} hoverable trigger={<Image className='portrait' src={info.image} ></Image>}>
             <Input 
                 size='mini' 
                 action={{content:'set url', onClick: () => dispatch(updateDetail({ target: 'image', newValue: imageUrl}))}} 

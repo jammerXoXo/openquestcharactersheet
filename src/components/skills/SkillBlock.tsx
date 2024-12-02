@@ -4,12 +4,14 @@ import { appState, combatSkillsKeys, formulaDescription, knowledgeSkillsKeys, ma
 import { SKILLS } from "../../constants/stats"
 import { useSelector } from "react-redux"
 import { selectCustomSkills } from "../../state/CharacterContext"
+import React from "react"
 
 type SkillBlockProps = {
-    type: skillTypes
+    type: skillTypes, 
+    parentStyle?: React.CSSProperties
 }
 
-const SkillBlock = ({type}: SkillBlockProps) => {
+const SkillBlock = ({type, parentStyle = {}}: SkillBlockProps) => {
 
     const customSkills = useSelector((state: { state: appState }) => selectCustomSkills(state))
 
@@ -48,9 +50,9 @@ const SkillBlock = ({type}: SkillBlockProps) => {
     }
 
     return (
-        <div style={{backgroundColor: getBackgroundColor(type), borderRadius: '10px', marginBottom: '8px'}}>
+        <div className='skillblock' style={{...parentStyle, backgroundColor: getBackgroundColor(type), borderRadius: '10px', margin: '8px', overflow: 'auto'}}>
             <Label style={{marginBottom: '3px', borderRadius: '0px 0px 5px 5px'}}>{SKILLS[type]?.display ?? 'custom'}</Label>
-            <div style={{display: 'flex', flexDirection: 'column', flexWrap: 'wrap', maxHeight: '250px'}}>
+            <div style={{display: 'flex', flexDirection: 'column', flexWrap: type==="practical"? 'wrap':'nowrap', maxHeight: '200px', overflow: 'auto'}}>
                 {getSkills(type)?.map((value) => <Skill key={value.skill} target={value.skill} displayText={value.display} type='skills'></Skill>)}
             </div>
         </div>

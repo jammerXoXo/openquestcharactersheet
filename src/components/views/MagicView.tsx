@@ -1,12 +1,11 @@
-import { useContext, useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { Button, Container, Form, GridColumn, GridRow, Input, Label, Popup, Segment, Table, TableBody, TableCell, TableHeader, TableHeaderCell, TableRow } from "semantic-ui-react"
+import { Button, Checkbox, Container, Form, GridColumn, GridRow, Input, Label, Popup, Segment, Table, TableBody, TableCell, TableHeader, TableHeaderCell, TableRow } from "semantic-ui-react"
 import { appState, baseSpell, learnedSpell, spellDescription } from "../../types/types"
 import { addSpells, deleteSpells, selectCustomElements, selectMagic, updateSpell } from "../../state/CharacterContext"
 import _ from "lodash"
 import { spellDescriptions } from "../../constants/magic"
 import { getBaseSpellGrowthCosts } from "../../utils/utils"
-import { SheetContext } from "../../state/SheetContext"
 
 
 
@@ -23,14 +22,13 @@ const MagicView = () => {
     const [sortColumn, setSortColumn] = useState<keyof learnedSpell>('name')
     const [sortDirection, setSortDirection] = useState<"ascending" | "descending" | undefined>(undefined)
     const [selected, setSelected] = useState<{[key: string]: number}>({} as {[key: string]: number})
+    const [viewing, setViewing] = useState<string | undefined>(undefined)
     const [deleting, setDeleting] = useState<boolean>(false)
     const [addingSpell, setAddingSpell] = useState<boolean>(false)
     const [newMagnitude, setNewMagnitude] = useState<number>(0)
     const [valid, setValid] = useState<boolean>(true)
     const [popupOpen, setPopopOpen] = useState('')
     const [searchTerm, setSearchTerm] = useState('')
-
-    const {editingMode} = useContext(SheetContext)
 
     const knownMagic = useSelector((state: { state: appState }) => selectMagic(state))
     const customElements = useSelector((state: { state: appState }) => selectCustomElements(state))
@@ -47,22 +45,14 @@ const MagicView = () => {
         setSelected({} as {[key: string]: number})
     }, [addingSpell])
 
-    useEffect(() => {
-        setAddingSpell(false)
-    }, [editingMode])
-
     const updateSelected = (spell: string) => {
-        if (!editingMode) {
-            setSelected({[spell]: 0})
-            return
-        }
-
         const temp = selected
         if (spell in temp) {
             delete temp[spell]
         } else {
             temp[spell] = 0
         }
+        console.log(selected)
         setSelected({...temp})
     }
 
@@ -98,7 +88,8 @@ const MagicView = () => {
         if (sortDirection === 'descending') {
             data = data.reverse()
         }
-        return (data.map((spell: learnedSpell) => <TableRow key={spell.name} active={spell.name in selected} onClick={() => updateSelected(spell.name)}>
+        return (data.map((spell: learnedSpell) => <TableRow key={spell.name} active={spell.name === viewing} onClick={() => setViewing(spell.name)}>
+                    <TableCell><Checkbox onChange={() => updateSelected(spell.name)}></Checkbox></TableCell>
                     <TableCell>{spell.name}</TableCell>
                     <TableCell>{spell.type}</TableCell>
                     <Popup
@@ -119,7 +110,8 @@ const MagicView = () => {
         if (sortDirection === 'descending') {
             data = data.reverse()
         }
-        return (data.map((spell: spellDescription) => <TableRow key={spell.name} active={spell.name in selected} onClick={() => updateSelected(spell.name)}>
+        return (data.map((spell: spellDescription) => <TableRow key={spell.name} active={spell.name === viewing} onClick={() => setViewing(spell.name)}>
+                    <TableCell><Checkbox onChange={() => updateSelected(spell.name)}></Checkbox></TableCell>
                     <TableCell>{spell.name}</TableCell>
                     <TableCell>{spell.type}</TableCell>
                     <TableCell>{spell.magnitude}{spell.variable? '+': ''}</TableCell>
@@ -135,8 +127,8 @@ const MagicView = () => {
             <Button icon='x' label={{as: 'a', basic: true, content: 'Back'}} onClick={() => setAddingSpell(false)}/>
         </div>:
         <div style={{display: 'flex', justifyContent: 'space-between', height: '35px', marginTop: '5px'}}>
-            <Button icon='plus' disabled={!editingMode} label={{as: 'a', basic: true, content: 'Add spells'}} onClick={() => setAddingSpell(true)}/>
-            <Button icon='trash' disabled={!editingMode || Object.keys(selected).length < 1} label={{as: 'a', basic: true, content: deleting?'Are you sure?':'Delete selected'}} onClick={() => dispatchDeleteSpells()}/>
+            <Button icon='plus' label={{as: 'a', basic: true, content: 'Add more spells'}} onClick={() => setAddingSpell(true)}/>
+            <Button icon='trash' disabled={Object.keys(selected).length < 1} label={{as: 'a', basic: true, content: deleting?'Are you sure?':'Delete selected'}} onClick={() => dispatchDeleteSpells()}/>
         </div>
         )
     }
@@ -161,20 +153,22 @@ const MagicView = () => {
         dispatch(updateSpell(spell))
     }
 
-    const getLastSelected = () => {
-        return Object.keys(selected).length > 0? allMagic[Object.keys(selected)[Object.keys(selected).length - 1]]: null
+    const getViewing = () => {
+        return viewing? allMagic[viewing]: null
     }
 
     return (
         <>
             <GridRow>
-                <GridColumn width={9}>
+                <GridColumn width={10}>
                     <Segment style={{display: 'flex', flex: '1 1', justifyContent: 'center', flexDirection: 'column'}}>
                         <Label attached='top'>{addingSpell? 'All Spells': 'Known Spells'}</Label>
-                        <Container style={{height: '467px', overflow: 'auto'}} >
-                            <Input fluid icon='search' size='mini'  onChange={(_, {value}) => setSearchTerm(value?.toLowerCase())}/>
+                        <Input fluid icon='search' size='mini'  onChange={(_, {value}) => setSearchTerm(value?.toLowerCase())}/>
+                        <Container style={{height: '437px', overflow: 'auto', marginTop: '10px'}} >
                             <Table>
                                 <TableHeader>
+                                    <TableHeaderCell>
+                                    </TableHeaderCell>
                                     <TableHeaderCell
                                         sorted={sortColumn === 'name' ? sortDirection: undefined}
                                         onClick={() => updateSort('name')}>
@@ -206,11 +200,11 @@ const MagicView = () => {
                         {getButtons()}
                     </Form>
                 </GridColumn>
-                <GridColumn width={7}>
+                <GridColumn width={6}>
                     <Segment>
-                        <Label attached="top">{getLastSelected()?.name}</Label>
-                        <Container style={{height: '467px', overflow: 'auto'}}>
-                            <span>{getLastSelected()?.description}</span>
+                        <Label style={{height: '30px'}} attached="top">{getViewing()?.name}</Label>
+                        <Container style={{height: '476px', overflow: 'auto'}}>
+                            <span>{getViewing()?.description}</span>
                         </Container>
                     </Segment>
                 </GridColumn>

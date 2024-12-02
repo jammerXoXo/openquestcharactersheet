@@ -27,23 +27,49 @@
     margin-bottom: 30px;
 }
 
+.portrait {
+    height: 200px;
+    object-fit: contain;
+    margin: auto;
+    border-style: outset;
+    border-width: 10px;
+    border-color: rgb(145, 122, 106);
+}
+
 .characteristiclist {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: space-between;
-    margin-bottom: 10px;
-    margin-right: 15px;
-    background-color: #f0f0f0;
+    margin: 5px;
     border-radius: 10px;
-
 }
 
 .characteristic {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
-    margin: 1px;
+    flex: 1 1 95px;
     margin-left: 5px;
+    margin-right: 5px;
+    margin-bottom: 10px;
+    height: 85px;
+}
+
+.skill {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    justify-content: space-between;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.skillblock {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding: 5px;
 }
 
 .numberroller {
@@ -55,11 +81,11 @@
 
 .charactersheet {
     /* width: 1050px !important; */
-    height: 100%;
-    background-color: rgba(224, 205, 179, 0.123) !important;
-    padding: 20px 20px 20px 20px;
+    background-color: transparent !important;
     margin: 0 !important;
     background-color: white;
+    border-width: 0px !important;
+    box-shadow: none !important;
 }
 
 @keyframes successanim {
@@ -134,9 +160,23 @@
 }
 
 .sheetcontainer {
-    background-color: rgba(240, 234, 223, 0.973);
+    background-color: rgba(141, 123, 113, 0.87);
+    height: 95.8%;
+    min-width: 950px;
+    border-style: groove;
+    border-color: rgb(146, 114, 63)
 }
 
 .menu {
     background-color: rgba(231, 231, 231, 0.973) !important;
+}
+
+.ui.table thead {
+    position: sticky !important;
+    top: 0;
+    z-index: 2;
+}
+
+.ui.styled.accordion, .ui.styled.accordion .accordion {
+    box-shadow: none !important;
 }

@@ -3,8 +3,8 @@ import { v4 as uuid} from 'uuid'
 
 import { createSlice, configureStore} from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
-import { applyForumlas, calculateCurrent, getBaseSpellGrowthCosts, getSkillGrowthCost, getSpellCost } from '../utils/utils'
-import { appState, attributesKeys, characteristicsKeys, characterStats, countersKeys, customElements, formulaDescription, item, learnedSpell, motivesKeys, options, skillsKeys, spellDescription, story, trackedInfoKeys } from '../types/types'
+import { applyForumlas, calculateCurrent, getBaseSpellGrowthCosts, getSkillGrowthCost, getSpellCost, persistCharacter, restoreCharacter } from '../utils/utils'
+import { appState, attributesKeys, characteristicsKeys, characterStats, countersKeys, customElements, formulaDescription, item, learnedSpell, notesKeys, options, skillsKeys, spellDescription, story, trackedInfoKeys } from '../types/types'
 import { spellDescriptions } from '../constants/magic'
 import { itemDescriptions } from '../constants/items'
 import { getDefaultCharacter } from '../constants/DefaultState'
@@ -20,7 +20,7 @@ const getLastCharacter = () => {
     if (lastUuid) {
         const lastCharacter:string = localStorage.getItem(`characters/${lastUuid}`) ?? ''
         if (lastCharacter.length > 0) {
-            ret.characterStats = JSON.parse(lastCharacter)
+            ret.characterStats = restoreCharacter(lastCharacter)
         }
     }
     const customElements:string = localStorage.getItem('customElements') ?? ''
@@ -89,12 +89,12 @@ const statsSlice = createSlice({
             state.characterStats.skills[target].current = calculateCurrent(state.characterStats.skills[target])
             state.characterStats.meta.edited = (new Date()).toLocaleString()
         },
-        updateStory: (state: appState, action: PayloadAction<{target: string, newValue: Partial<story>, type: motivesKeys}>) => {
-            state.characterStats.motives[action.payload.type][action.payload.target] = {...state.characterStats.motives[action.payload.type][action.payload.target], ...action.payload.newValue}
+        updateNote: (state: appState, action: PayloadAction<{target: string, newValue: Partial<story>, type: notesKeys}>) => {
+            state.characterStats.notes[action.payload.type][action.payload.target] = {...state.characterStats.notes[action.payload.type][action.payload.target], ...action.payload.newValue}
             state.characterStats.meta.edited = (new Date()).toLocaleString()
         },
-        deleteStory: (state: appState, action: PayloadAction<{target: string, type: motivesKeys}>) => {
-            delete state.characterStats.motives[action.payload.type][action.payload.target] 
+        deleteNote: (state: appState, action: PayloadAction<{target: string, type: notesKeys}>) => {
+            delete state.characterStats.notes[action.payload.type][action.payload.target] 
             state.characterStats.meta.edited = (new Date()).toLocaleString()
         },
         updateDetail: (state: appState, action: PayloadAction<{target: trackedInfoKeys, newValue: string}>) => {
@@ -131,10 +131,9 @@ const statsSlice = createSlice({
                 state.characterStats.counters = loadChar.counters
                 state.characterStats.inventory = loadChar.inventory
                 state.characterStats.magic = loadChar.magic
-                state.characterStats.motives = loadChar.motives
+                state.characterStats.notes = loadChar.notes
                 state.characterStats.skills = loadChar.skills
                 state.characterStats.meta = loadChar.meta
-                state.characterStats.notes = loadChar.notes
             } else if (action.payload.type === 'customElements') {
                 const customElements = action.payload.newValue as customElements
                 state.customElements = customElements
@@ -151,7 +150,6 @@ const statsSlice = createSlice({
             state.characterStats.counters = newChar.characterStats.counters
             state.characterStats.inventory = newChar.characterStats.inventory
             state.characterStats.magic = newChar.characterStats.magic
-            state.characterStats.motives = newChar.characterStats.motives
             state.characterStats.skills = newChar.characterStats.skills
             state.characterStats.meta = newChar.characterStats.meta
             state.characterStats.notes = newChar.characterStats.notes
@@ -222,9 +220,6 @@ const statsSlice = createSlice({
             if (index >= 0) {
                 state.characterStats.inventory[index] = {...state.characterStats.inventory[index], ...action.payload.newValue}
             }
-        },
-        updateNotes: (state: appState, action: PayloadAction<{newValue: string}>) => {
-            state.characterStats.notes = action.payload.newValue
         },
         addCustomItem: (state: appState, action: PayloadAction<{newValue: item}>) => {
             const newItem = action.payload.newValue
@@ -316,12 +311,11 @@ const statsSlice = createSlice({
         selectAttribute: (state: appState, target: attributesKeys) => state.characterStats.attributes[target],
         selectCharacteristic: (state: appState, target: characteristicsKeys) => state.characterStats.characteristics[target],
         selectSkill: (state: appState, target: skillsKeys) => state.characterStats.skills[target],
-        selectMotive: (state: appState, target: motivesKeys) => state.characterStats.motives[target],
+        selectNotes: (state: appState) => state.characterStats.notes,
         selectInfo: (state: appState) => state.characterStats.info,
         selectCounter: (state: appState, target: countersKeys) => state.characterStats.counters[target],
         selectMagic: (state: appState) => state.characterStats.magic,
         selectInventory: (state: appState) => state.characterStats.inventory,
-        selectNotes: (state: appState) => state.characterStats.notes,
         selectCustomSkills: (state: appState) => state.characterStats.customSkills,
         selectCustomElements: (state: appState) => state.customElements,
         selectOptions: (state: appState) => state.options
@@ -339,7 +333,7 @@ store.subscribe(() => {
         timer = setTimeout(() => {
             const {state} = store.getState()
             document.title = `OpenQuest - ${state.characterStats.info.name}`
-            localStorage.setItem(`characters/${state.characterStats.meta.id}`, JSON.stringify(state.characterStats))
+            persistCharacter(state.characterStats)
             localStorage.setItem(`options/lastsaved`, state.characterStats.meta.id)
             localStorage.setItem('customElements', JSON.stringify(state.customElements))
             localStorage.setItem('options', JSON.stringify(state.options))
@@ -353,6 +347,6 @@ store.subscribe(() => {
 const { actions, selectors, reducer } = statsSlice
 
 export const { dispatch } = store
-export const { updateCharacteristic, updateSkill, updateStory, deleteStory, updateDetail, applyDamage, updateCounter, updateAttribute, loadData, newCharacter, deleteSpells, addSpells, updateSpell, deleteItems, addItems, updateItem, updateNotes, addCustomItem, addCustomSkill, addCustomSpell, deleteCustomElement, updateOptions } = actions
-export const { selectAttribute, selectCharacteristic, selectSkill, selectMotive, selectInfo, selectCounter, selectMagic, selectInventory, selectNotes, selectCustomElements, selectCustomSkills, selectOptions } = selectors
+export const { updateCharacteristic, updateSkill, updateNote, deleteNote, updateDetail, applyDamage, updateCounter, updateAttribute, loadData, newCharacter, deleteSpells, addSpells, updateSpell, deleteItems, addItems, updateItem, addCustomItem, addCustomSkill, addCustomSpell, deleteCustomElement, updateOptions } = actions
+export const { selectAttribute, selectCharacteristic, selectSkill, selectInfo, selectCounter, selectMagic, selectInventory, selectNotes, selectCustomElements, selectCustomSkills, selectOptions } = selectors
 export default reducer

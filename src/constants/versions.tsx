@@ -1,0 +1,1 @@
+export const characterStatsVersion = '1.1'

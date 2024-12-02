@@ -1,10 +1,9 @@
-import { useContext, useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { Button, Container, Form, GridColumn, GridRow, Input, Label, Popup, Segment, Table, TableBody, TableCell, TableHeader, TableHeaderCell, TableRow } from "semantic-ui-react"
+import { Button, Checkbox, Container, Form, GridColumn, GridRow, Input, Label, Popup, Segment, Table, TableBody, TableCell, TableHeader, TableHeaderCell, TableRow } from "semantic-ui-react"
 import { appState, item } from "../../types/types"
 import { addItems,  deleteItems, selectCustomElements, selectInventory, updateItem} from "../../state/CharacterContext"
 import _ from "lodash"
-import { SheetContext } from "../../state/SheetContext"
 import { itemDescriptions } from "../../constants/items"
 
 
@@ -15,6 +14,7 @@ const InventoryView = () => {
     const [sortColumn, setSortColumn] = useState<keyof item>('name')
     const [sortDirection, setSortDirection] = useState<"ascending" | "descending" | undefined>(undefined)
     const [selected, setSelected] = useState<{[key: string]: number}>({} as {[key: string]: number})
+    const [viewing, setViewing] = useState<string | undefined>(undefined)
     const [deleting, setDeleting] = useState<boolean>(false)
     const [addingItem, setAddingItem] = useState<boolean>(false)
     const [searchTerm, setSearchTerm] = useState('')
@@ -22,7 +22,6 @@ const InventoryView = () => {
     const [valid, setValid] = useState<boolean>(true)
     const [popupOpen, setPopopOpen] = useState('')
 
-    const {editingMode} = useContext(SheetContext)
 
     const inventory = useSelector((state: { state: appState }) => selectInventory(state))
     const customElements = useSelector((state: { state: appState }) => selectCustomElements(state))
@@ -37,16 +36,7 @@ const InventoryView = () => {
         setSelected({} as {[key: string]: number})
     }, [addingItem])
 
-    useEffect(() => {
-        setAddingItem(false)
-    }, [editingMode])
-
     const updateSelected = (spell: string) => {
-        if (!editingMode) {
-            setSelected({[spell]: 0})
-            return
-        }
-
         const temp = selected
         if (spell in temp) {
             delete temp[spell]
@@ -84,7 +74,8 @@ const InventoryView = () => {
         if (sortDirection === 'descending') {
             data = data.reverse()
         }
-        return (data.map((item: item) => <TableRow key={item.name} active={item.name in selected} onClick={() => updateSelected(item.name)}>
+        return (data.map((item: item) => <TableRow key={item.name} active={item.name === viewing} onClick={() => setViewing(item.name)}>
+                    <TableCell><Checkbox onChange={() => updateSelected(item.name)} checked={item.name in selected}></Checkbox></TableCell>
                     <TableCell>{item.name}</TableCell>
                     <TableCell>{item.type}</TableCell>
                     <TableCell>{item.enc}</TableCell>
@@ -108,8 +99,8 @@ const InventoryView = () => {
             <Button icon='x' label={{as: 'a', basic: true, content: 'Back'}} onClick={() => setAddingItem(false)}/>
         </div>:
         <div style={{display: 'flex', justifyContent: 'space-between', height: '35px', marginTop: '5px'}}>
-            <Button icon='plus' disabled={!editingMode} label={{as: 'a', basic: true, content: 'Add items'}} onClick={() => setAddingItem(true)}/>
-            <Button icon='trash' disabled={!editingMode || Object.keys(selected).length < 1} label={{as: 'a', basic: true, content: deleting?'Are you sure?':'Delete selected'}} onClick={() => dispatchDeleteItems()}/>
+            <Button icon='plus' label={{as: 'a', basic: true, content: 'Add more items'}} onClick={() => setAddingItem(true)}/>
+            <Button icon='trash' disabled={Object.keys(selected).length < 1} label={{as: 'a', basic: true, content: deleting?'Are you sure?':'Delete selected'}} onClick={() => dispatchDeleteItems()}/>
         </div>
         )
     }
@@ -131,20 +122,22 @@ const InventoryView = () => {
     }
 
 
-    const getLastSelected = () => {
-        return Object.keys(selected).length > 0? allItems[Object.keys(selected)[Object.keys(selected).length - 1]]: null
+    const getViewing = () => {
+        return viewing? allItems[viewing]: null
     }
 
     return (
         <>
             <GridRow>
-                <GridColumn width={9}>
+                <GridColumn width={10}>
                     <Segment style={{display: 'flex', flex: '1 1', justifyContent: 'center', flexDirection: 'column'}}>
                         <Label attached='top'>{addingItem? 'All Items': 'Inventory'}</Label>
-                        <Container style={{height: '467px', overflow: 'auto'}} >
-                            <Input fluid icon='search' size='mini'  onChange={(_, {value}) => setSearchTerm(value?.toLowerCase())}/>
+                        <Input fluid icon='search' size='mini'  onChange={(_, {value}) => setSearchTerm(value?.toLowerCase())}/>
+                        <Container style={{height: '437px', overflow: 'auto', marginTop: '10px'}} >
                             <Table>
                                 <TableHeader>
+                                    <TableHeaderCell>
+                                    </TableHeaderCell>
                                     <TableHeaderCell
                                         sorted={sortColumn === 'name' ? sortDirection: undefined}
                                         onClick={() => updateSort('name')}>
@@ -188,11 +181,11 @@ const InventoryView = () => {
                         {getButtons()}
                     </Form>
                 </GridColumn>
-                <GridColumn width={7}>
+                <GridColumn width={6}>
                     <Segment>
-                        <Label attached="top">{getLastSelected()?.name}</Label>
-                        <Container style={{height: '467px', overflow: 'auto'}}>
-                            <span>{getLastSelected()?.description}</span>
+                        <Label style={{height: '30px'}} attached="top">{getViewing()?.name}</Label>
+                        <Container style={{height: '476px', overflow: 'auto'}}>
+                            <span>{getViewing()?.description}</span>
                         </Container>
                     </Segment>
                 </GridColumn>
