@@ -175,7 +175,7 @@ const statsSlice = createSlice({
                     variable: spellDescriptions[spellName]?.variable ?? state.customElements.magic[spellName].variable,
                     tags: spellDescriptions[spellName]?.tags ?? state.customElements.magic[spellName].tags,
                     type: spellDescriptions[spellName]?.type ?? state.customElements.magic[spellName].type,
-                    learnedMagnitude: 0,
+                    learnedMagnitude: spellDescriptions[spellName]?.magnitude ?? state.customElements.magic[spellName].magnitude,
                     remainingMagnitude: spellDescriptions[spellName]?.magnitude ?? state.customElements.magic[spellName].magnitude
                 }))
             }

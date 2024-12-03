@@ -26,7 +26,9 @@ const MagicView = () => {
     const [deleting, setDeleting] = useState<boolean>(false)
     const [addingSpell, setAddingSpell] = useState<boolean>(false)
     const [newMagnitude, setNewMagnitude] = useState<number>(0)
+    const [newRemainingMagnitude, setNewRemainingMagnitude] = useState<number>(0)
     const [valid, setValid] = useState<boolean>(true)
+    const [remainingValid, setRemainingValid] = useState<boolean>(true)
     const [popupOpen, setPopopOpen] = useState('')
     const [searchTerm, setSearchTerm] = useState('')
 
@@ -52,7 +54,6 @@ const MagicView = () => {
         } else {
             temp[spell] = 0
         }
-        console.log(selected)
         setSelected({...temp})
     }
 
@@ -76,11 +77,36 @@ const MagicView = () => {
         }
     }
 
+    const validateRemainingMagnitude = (value: string, magnitude: number) => {
+        const match = re.exec(value)
+        if (match) {
+            const newMag = parseInt(value)
+            if (newMag <= magnitude && newMag > 0) {
+                setRemainingValid(true)
+                setNewRemainingMagnitude(newMag)
+            } else {
+                setRemainingValid(false)
+            }
+        } else {
+            setRemainingValid(false)
+        }
+    }
+
     const searchMagic = (magic: baseSpell) => {
         if ((searchTerm?.length ?? 0) === 0) {
             return true
         }
         return (magic.name.toLowerCase().includes(searchTerm) || magic.tags.toLowerCase().includes(searchTerm) || magic.type.toLowerCase().includes(searchTerm))
+    }
+
+    const getMagnitudeTableCell = (spell: learnedSpell) => {
+        if (spell.type === 'divine') {
+            return <>
+                <Input onKeyPress={(e: {key: string}) => e.key === 'Enter' && dispatchUpdateSpells({name: spell.name, learnedMagnitude: newMagnitude})} size='mini' action={{ content: 'set', onClick: () => dispatchUpdateSpells({name: spell.name, learnedMagnitude: newMagnitude})}} onChange={(_, {value}) => validateNewMagnitude(value, spell.magnitude)} placeholder='Set Learned Magnitude...' error={!valid}/>
+                <Input onKeyPress={(e: {key: string}) => e.key === 'Enter' && dispatchUpdateSpells({name: spell.name, remainingMagnitude: newRemainingMagnitude})} size='mini' action={{ content: 'set', onClick: () => dispatchUpdateSpells({name: spell.name, remainingMagnitude: newRemainingMagnitude})}} onChange={(_, {value}) => validateRemainingMagnitude(value, spell.learnedMagnitude)} placeholder='Set Remaining Magnitude...' error={!remainingValid}/>
+            </>
+        }
+        return <Input onKeyPress={(e: {key: string}) => e.key === 'Enter' && dispatchUpdateSpells({name: spell.name, learnedMagnitude: newMagnitude})} size='mini' action={{ content: 'set', onClick: () => dispatchUpdateSpells({name: spell.name, learnedMagnitude: newMagnitude})}} onChange={(_, {value}) => validateNewMagnitude(value, spell.magnitude)} placeholder='Set Magnitude...' error={!valid}/>
     }
 
     const getKnownSpellTableData = () => {
@@ -89,7 +115,7 @@ const MagicView = () => {
             data = data.reverse()
         }
         return (data.map((spell: learnedSpell) => <TableRow key={spell.name} active={spell.name === viewing} onClick={() => setViewing(spell.name)}>
-                    <TableCell><Checkbox onChange={() => updateSelected(spell.name)}></Checkbox></TableCell>
+                    <TableCell><Checkbox onChange={() => updateSelected(spell.name)} checked={selected?.[spell.name] === 0}></Checkbox></TableCell>
                     <TableCell>{spell.name}</TableCell>
                     <TableCell>{spell.type}</TableCell>
                     <Popup
@@ -98,8 +124,8 @@ const MagicView = () => {
                         open={popupOpen === spell.name}
                         on='click'
                         disabled={!spell.variable || spell.type === 'sorcery'} 
-                        trigger={<TableCell>{spell.magnitude}{spell.variable? '+': ''}{spell.type === 'divine' || spell.type ==='personal' ? ` (${spell.learnedMagnitude})`:''}</TableCell>}
-                        content={<Input onKeyPress={(e: {key: string}) => e.key === 'Enter' && dispatchUpdateSpells({name: spell.name, learnedMagnitude: newMagnitude})} size='mini' action={{ content: 'set', onClick: () => dispatchUpdateSpells({name: spell.name, learnedMagnitude: newMagnitude})}} onChange={(_, {value}) => validateNewMagnitude(value, spell.magnitude)} placeholder='Set Magnitude...' error={!valid}/>}/>
+                        trigger={<TableCell>{spell.magnitude}{spell.variable? '+': ''}{spell.type === 'divine' || (spell.type ==='personal' && spell.variable) ? ` (${spell.learnedMagnitude})`:''}{spell.type === 'divine' ? ` [${spell.remainingMagnitude}] `: ''}</TableCell>}
+                        content={getMagnitudeTableCell(spell)}/>
                     <TableCell>{spell.tags}</TableCell>
                 </TableRow>)
         )
@@ -111,7 +137,7 @@ const MagicView = () => {
             data = data.reverse()
         }
         return (data.map((spell: spellDescription) => <TableRow key={spell.name} active={spell.name === viewing} onClick={() => setViewing(spell.name)}>
-                    <TableCell><Checkbox onChange={() => updateSelected(spell.name)}></Checkbox></TableCell>
+                    <TableCell><Checkbox onChange={() => updateSelected(spell.name)} checked={selected?.[spell.name] === 0}></Checkbox></TableCell>
                     <TableCell>{spell.name}</TableCell>
                     <TableCell>{spell.type}</TableCell>
                     <TableCell>{spell.magnitude}{spell.variable? '+': ''}</TableCell>
@@ -182,7 +208,7 @@ const MagicView = () => {
                                     <TableHeaderCell
                                         sorted={sortColumn === 'magnitude' ? sortDirection: undefined}
                                         onClick={() => updateSort('magnitude')}>
-                                        Magnitude
+                                        Magnitude (L) [R]
                                     </TableHeaderCell>
                                     <TableHeaderCell
                                         sorted={sortColumn === 'tags' ? sortDirection: undefined}
