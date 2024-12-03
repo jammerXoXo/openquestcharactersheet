@@ -102,7 +102,7 @@ const MagicView = () => {
     const getMagnitudeTableCell = (spell: learnedSpell) => {
         if (spell.type === 'divine') {
             return <>
-                <Input onKeyPress={(e: {key: string}) => e.key === 'Enter' && dispatchUpdateSpells({name: spell.name, learnedMagnitude: newMagnitude})} size='mini' action={{ content: 'set', onClick: () => dispatchUpdateSpells({name: spell.name, learnedMagnitude: newMagnitude})}} onChange={(_, {value}) => validateNewMagnitude(value, spell.magnitude)} placeholder='Set Learned Magnitude...' error={!valid}/>
+                {spell.variable ? <Input onKeyPress={(e: {key: string}) => e.key === 'Enter' && dispatchUpdateSpells({name: spell.name, learnedMagnitude: newMagnitude})} size='mini' action={{ content: 'set', onClick: () => dispatchUpdateSpells({name: spell.name, learnedMagnitude: newMagnitude})}} onChange={(_, {value}) => validateNewMagnitude(value, spell.magnitude)} placeholder='Set Learned Magnitude...' error={!valid}/> : ''}
                 <Input onKeyPress={(e: {key: string}) => e.key === 'Enter' && dispatchUpdateSpells({name: spell.name, remainingMagnitude: newRemainingMagnitude})} size='mini' action={{ content: 'set', onClick: () => dispatchUpdateSpells({name: spell.name, remainingMagnitude: newRemainingMagnitude})}} onChange={(_, {value}) => validateRemainingMagnitude(value, spell.learnedMagnitude)} placeholder='Set Remaining Magnitude...' error={!remainingValid}/>
             </>
         }
@@ -123,7 +123,7 @@ const MagicView = () => {
                         onClose={() => setPopopOpen('')}
                         open={popupOpen === spell.name}
                         on='click'
-                        disabled={!spell.variable || spell.type === 'sorcery'} 
+                        disabled={!(spell.type === 'divine') && (!spell.variable || spell.type === 'sorcery')}
                         trigger={<TableCell>{spell.magnitude}{spell.variable? '+': ''}{(spell.type === 'divine' || spell.type ==='personal') && spell.variable ? ` (${spell.learnedMagnitude})`:''}{spell.type === 'divine' ? ` [${spell.remainingMagnitude}] `: ''}</TableCell>}
                         content={getMagnitudeTableCell(spell)}/>
                     <TableCell>{spell.tags}</TableCell>
