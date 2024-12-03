@@ -124,7 +124,7 @@ const MagicView = () => {
                         open={popupOpen === spell.name}
                         on='click'
                         disabled={!spell.variable || spell.type === 'sorcery'} 
-                        trigger={<TableCell>{spell.magnitude}{spell.variable? '+': ''}{spell.type === 'divine' || (spell.type ==='personal' && spell.variable) ? ` (${spell.learnedMagnitude})`:''}{spell.type === 'divine' ? ` [${spell.remainingMagnitude}] `: ''}</TableCell>}
+                        trigger={<TableCell>{spell.magnitude}{spell.variable? '+': ''}{(spell.type === 'divine' || spell.type ==='personal') && spell.variable ? ` (${spell.learnedMagnitude})`:''}{spell.type === 'divine' ? ` [${spell.remainingMagnitude}] `: ''}</TableCell>}
                         content={getMagnitudeTableCell(spell)}/>
                     <TableCell>{spell.tags}</TableCell>
                 </TableRow>)
