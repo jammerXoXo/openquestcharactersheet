@@ -81,7 +81,7 @@ const MagicView = () => {
         const match = re.exec(value)
         if (match) {
             const newMag = parseInt(value)
-            if (newMag <= magnitude && newMag > 0) {
+            if (newMag <= magnitude && newMag >= 0) {
                 setRemainingValid(true)
                 setNewRemainingMagnitude(newMag)
             } else {
